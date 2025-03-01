@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Constant</title>
+  </head>
+  <body style="width: 100vw; height: 100vh; margin: 0; padding: 0">
+    <canvas
+      id="canvas"
+      style="
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        outline: none;
+      "
+    ></canvas>
+    <script type="text/javascript" src="wasm/Constant.js"></script>
+    <script>
+      const canvas = document.getElementById("canvas");
+
+      // Resize canvas to fit into window
+      function resizeCanvas() {
+        canvas.height = window.devicePixelRatio * window.innerHeight;
+        canvas.width = window.devicePixelRatio * window.innerWidth;
+        canvas.style.height = window.innerHeight + "px";
+        canvas.style.width = window.innerWidth + "px";
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      // Disable default context menu of canvas
+      canvas.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+      });
+    </script>
+  </body>
+</html>

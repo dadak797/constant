@@ -1,0 +1,15 @@
+# node dependencies
+node_modules/
+
+# environment variables
+.env
+
+# wasm
+wasm/*
+
+# build
+build/
+build-wasm/
+
+# VS code
+.vscode/
