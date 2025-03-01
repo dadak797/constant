@@ -27,6 +27,7 @@ project(${PROJECT_NAME})
 # Add source files
 add_executable(${PROJECT_NAME}
   src/main.cpp
+  src/logger_config.cpp    src/logger_config.h
 )
 
 # Declare variables for dependencies
@@ -120,12 +121,19 @@ else()
   endif()
 endif()
 
+# Add compile definitions
 target_compile_definitions(${PROJECT_NAME}
   PRIVATE
     WINDOW_NAME="${WINDOW_NAME}"
     WINDOW_WIDTH=${WINDOW_WIDTH}
     WINDOW_HEIGHT=${WINDOW_HEIGHT}
 )
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+      DEBUG_BUILD
+  )
+endif()
 
 # if DEP_LIST is not empty, add dependencies
 if (DEP_LIST)

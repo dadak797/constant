@@ -11,5 +11,8 @@ wasm/*
 build/
 build-wasm/
 
-# VS code
+# vs-code
 .vscode/
+
+# log file
+logs/
