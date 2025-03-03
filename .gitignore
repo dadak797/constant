@@ -8,7 +8,7 @@ node_modules/
 wasm/*
 
 # build
-build/
+build-mac/
 build-wasm/
 
 # vs-code

@@ -25,9 +25,6 @@ int main() {
         pthread_join(threads[i], nullptr);
     }
 
-    while(true) {
-    }
-
     app::shutdown_logger();
     return 0;
 }
