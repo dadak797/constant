@@ -9,6 +9,12 @@
 #include <spdlog/spdlog.h>
 
 // Log level (trace -> debug -> info -> warn -> error -> critical)
+// - SPDLOG_TRACE: Trace message
+// - SPDLOG_DEBUG: Debug message
+// - SPDLOG_INFO: Information message
+// - SPDLOG_WARN: Warning message
+// - SPDLOG_ERROR: Error message
+// - SPDLOG_CRITICAL: Critical message
 
 // For debug build (Format: [timestamp] [level] [source:line] message)
 // - SPDLOG_DEBUG, SPDLOG_INFO, SPDLOG_WARN, SPDLOG_ERROR and SPDLOG_CRITICAL can be used.

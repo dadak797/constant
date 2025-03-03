@@ -19,9 +19,9 @@
   "author": "Park Seung-Keun",
   "type": "module",
   "scripts": {
-    "build-mac:debug": "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Debug && cmake --build build -- -j8",
-    "build-mac:release": "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build -- -j8",
-    "rm-build-mac": "rm -rf build",
+    "build-mac:debug": "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Debug && cmake --build build-mac -- -j8",
+    "build-mac:release": "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build-mac -- -j8",
+    "rm-build-mac": "rm -rf build-mac",
     "mac": "./build/Constant",
     "build-wasm:debug": "emcmake cmake -S. -Bbuild-wasm -DCMAKE_BUILD_TYPE=Debug && cmake --build build-wasm --target install -- -j8",
     "build-wasm:release": "emcmake cmake -S. -Bbuild-wasm -DCMAKE_BUILD_TYPE=Release && cmake --build build-wasm --target install -- -j8",

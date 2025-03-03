@@ -1,20 +1,32 @@
 #include "logger_config.h"
+#include <pthread.h>
 
+#define NUM_THREADS 4
+
+
+void* print_hello(void* arg) {
+    int thread_id = *(int*)arg;
+    SPDLOG_INFO("Hello from thread {}", thread_id);
+    return nullptr;
+}
 
 int main() {
     app::init_logger();
 
-    SPDLOG_TRACE("hello, trace");
-    SPDLOG_DEBUG("hello, debug");
-    SPDLOG_INFO("hello, info");
-    SPDLOG_WARN("hello, warn");
-    SPDLOG_ERROR("hello, error");
+    pthread_t threads[NUM_THREADS];
+    int thread_ids[NUM_THREADS];
 
-    spdlog::trace("hello, trace");
-    spdlog::debug("hello, debug");
-    spdlog::info("hello, info");
-    spdlog::warn("hello, warn");
-    spdlog::error("hello, error");
+    for (int i = 0; i < NUM_THREADS; i++) {
+        thread_ids[i] = i;
+        pthread_create(&threads[i], nullptr, print_hello, &thread_ids[i]);
+    }
+
+    for (int i = 0; i < NUM_THREADS; i++) {
+        pthread_join(threads[i], nullptr);
+    }
+
+    while(true) {
+    }
 
     app::shutdown_logger();
     return 0;

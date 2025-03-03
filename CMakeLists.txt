@@ -62,12 +62,16 @@ if (EMSCRIPTEN)
     "SHELL:-sENVIRONMENT=web,worker"
     "SHELL:-sUSE_WEBGL2=1"
     "SHELL:-sMODULARIZE=1"
-    "SHELL:-sEXPORT_NAME='createViewer'"
-    "SHELL:--extern-post-js ${CMAKE_SOURCE_DIR}/src/post-js.js"
+    "SHELL:-sEXPORT_NAME='Viewer'"
+    # "SHELL:--extern-post-js ${CMAKE_SOURCE_DIR}/src/post-js.js"
     # "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/webassembly/resources/@/resources/"
     "SHELL:-sALLOW_MEMORY_GROWTH=1"
     # "SHELL:-sTOTAL_MEMORY=256MB"
     "SHELL:-sMAXIMUM_MEMORY=16GB"
+    "SHELL:-sUSE_PTHREADS=1" 
+    "SHELL:-sPTHREAD_POOL_SIZE=4"
+    "SHELL:-sPROXY_TO_PTHREAD=1"
+    "SHELL:-sNO_EXIT_RUNTIME=1"
   )
 
   if (CMAKE_BUILD_TYPE STREQUAL "Release")
