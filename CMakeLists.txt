@@ -72,6 +72,7 @@ if (EMSCRIPTEN)
     "SHELL:-sPTHREAD_POOL_SIZE=4"
     "SHELL:-sPROXY_TO_PTHREAD=1"
     "SHELL:-sNO_EXIT_RUNTIME=1"
+    "SHELL:-Wno-pthreads-mem-growth"  # Suppress warning (-Wpthreads-mem-growth)
   )
 
   if (CMAKE_BUILD_TYPE STREQUAL "Release")
