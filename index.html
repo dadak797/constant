@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Constant</title>
+  </head>
+  <body style="width: 100vw; height: 100vh; margin: 0; padding: 0">
+    <canvas
+      id="canvas"
+      style="
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        outline: none;
+      "
+    ></canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+
+      // Resize canvas to fit into window
+      function resizeCanvas() {
+        canvas.height = window.devicePixelRatio * window.innerHeight;
+        canvas.width = window.devicePixelRatio * window.innerWidth;
+        canvas.style.height = window.innerHeight + "px";
+        canvas.style.width = window.innerWidth + "px";
+      }
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      // Disable default context menu of canvas
+      canvas.addEventListener("contextmenu", (event) => {
+        event.preventDefault();
+      });
+    </script>
+    <script>
+      // Wait for the page to be fully loaded
+      window.onload = function() {
+        let moduleConfig = {
+          print: (function () {
+            return function (text) {
+              text = Array.prototype.slice.call(arguments).join(" ");
+              console.log(text);
+            };
+          })(),
+          printErr: function (text) {
+            text = Array.prototype.slice.call(arguments).join(" ");
+            console.error(text);
+          },
+          canvas: (function () {
+            var canvas = document.getElementById("canvas");
+            canvas.addEventListener(
+              "webglcontextlost",
+              function (e) {
+                alert("WebGL context lost, please reload the page");
+                e.preventDefault();
+              },
+              false
+            );
+            canvas.getContext("webgl2", {
+              alpha: false,
+              depth: true,
+              antialias: false,
+              preserveDrawingBuffer: true,
+            });
+            return canvas;
+          })(),
+          setStatus: function (text) {
+            if (text.length) {
+              console.log("Status:", text);
+            }
+          },
+          onRuntimeInitialized: function () {
+            console.log("Viewer runtime initialized.");
+        
+            let canvas = document.getElementById("canvas");
+        
+            // focus on the canvas to grab keyboard inputs.
+            canvas.setAttribute("tabindex", "0");
+        
+            // grab focus when the render window region receives mouse clicks.
+            canvas.addEventListener("click", () => canvas.focus());
+          },
+          locateFile: function (path) {
+            return `/wasm/${path}`;
+          },
+        };
+        
+        Viewer(moduleConfig).then(() => {
+          console.log("Viewer instance initialized.");
+        
+          resizeCanvas();
+        });
+      };
+    </script>
+    <script type="text/javascript" src="wasm/Constant.js"></script>
+    <script>
+      // Check browser support
+      function isWasmSupported() {
+        try {
+          if (
+            typeof WebAssembly === "object" &&
+            typeof WebAssembly.instantiate === "function"
+          ) {
+            const aDummyModule = new WebAssembly.Module(
+              Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00)
+            );
+            if (aDummyModule instanceof WebAssembly.Module) {
+              return (
+                new WebAssembly.Instance(aDummyModule) instanceof WebAssembly.Instance
+              );
+            }
+          }
+        } catch (e) {}
+        return false;
+      }
+
+      if (!isWasmSupported()) {
+        alert(
+          "Your browser cannot support WebAssembly! Please install a modern browser."
+        );
+      }
+    </script>
+  </body>
+</html>

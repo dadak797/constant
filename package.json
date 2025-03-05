@@ -1,0 +1,42 @@
+{
+  "name": "constant",
+  "version": "0.1.0",
+  "description": "Mesh viewer, modeler, simulator",
+  "keywords": [
+    "Mesh",
+    "Modeler",
+    "Simulator"
+  ],
+  "homepage": "https://github.com/dadak797/constant#readme",
+  "bugs": {
+    "url": "https://github.com/dadak797/constant/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dadak797/constant.git"
+  },
+  "license": "BSD-3-Clause",
+  "author": "Park Seung-Keun",
+  "type": "module",
+  "scripts": {
+    "build-mac:debug": "cmake -S. -Bbuild-mac -DCMAKE_BUILD_TYPE=Debug && cmake --build build-mac -- -j8",
+    "build-mac:release": "cmake -S. -Bbuild-mac -DCMAKE_BUILD_TYPE=Release && cmake --build build-mac -- -j8",
+    "rm-build-mac": "rm -rf build-mac",
+    "mac": "./build-mac/Constant",
+    "build-wasm:debug": "emcmake cmake -S. -Bbuild-wasm -DCMAKE_BUILD_TYPE=Debug && cmake --build build-wasm --target install -- -j8",
+    "build-wasm:release": "emcmake cmake -S. -Bbuild-wasm -DCMAKE_BUILD_TYPE=Release && cmake --build build-wasm --target install -- -j8",
+    "rm-build-wasm": "rm -rf build-wasm",
+    "wasm": "nodemon --exec babel-node server-src/init.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.9",
+    "@babel/node": "^7.26.0",
+    "@babel/preset-env": "^7.26.9",
+    "nodemon": "^3.1.9"
+  }
+}
