@@ -1,0 +1,21 @@
+# node modules
+node_modules/
+
+# build files
+build-mac/
+build-wasm/
+
+# logs
+logs/
+
+# vscode
+.vscode/
+
+# uploads
+upload/*
+
+# environmental variables
+.env
+
+# wasm files
+wasm/*
