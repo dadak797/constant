@@ -17,10 +17,6 @@ if (EMSCRIPTEN)
   set(CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} -sMEMORY64=1 -pthread")
 endif()
 
-if (MSVC)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
-endif()
-
 # Set project
 project(${PROJECT_NAME})
 
@@ -29,6 +25,10 @@ add_executable(${PROJECT_NAME}
   src/main.cpp
   src/logger_config.cpp    src/logger_config.h
 )
+
+if (MSVC)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+endif()
 
 # Declare variables for dependencies
 set(DEP_INCLUDE_DIR)
