@@ -9,6 +9,7 @@ wasm/*
 
 # build
 build-mac/
+build-win/
 build-wasm/
 
 # vs-code
