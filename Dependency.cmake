@@ -56,7 +56,7 @@ elseif(PLATFORM_MACOS)
 elseif(EMSCRIPTEN)
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
-  set(BOOST_EXTRA_OPTIONS "cxxstd=17" "cxxflags=-std=c++17 -sMEMORY64=1 -pthread")
+  set(BOOST_EXTRA_OPTIONS "toolset=emscripten" "cxxstd=17" "cxxflags=-std=c++17 -sMEMORY64=1 -pthread")
   message("boost options: ${BOOST_EXTRA_OPTIONS}")
 else()
   # Linux
@@ -73,12 +73,6 @@ set(BOOST_COMPONENTS
   --with-serialization
 )
 
-if(EMSCRIPTEN)
-  set(BOOST_TOOLSET_OPTION "toolset=emscripten")
-else()
-  set(BOOST_TOOLSET_OPTION "")
-endif()
-
 ExternalProject_Add(
   dep_boost
   DOWNLOAD_EXTRACT_TIMESTAMP TRUE
@@ -90,7 +84,6 @@ ExternalProject_Add(
     ${BOOST_COMPONENTS}
     --prefix=${DEP_INSTALL_DIR}
     --layout=system
-    ${BOOST_TOOLSET_OPTION}
     variant=release
     link=static
     # threading=multi
