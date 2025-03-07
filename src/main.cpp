@@ -197,6 +197,22 @@ int main() {
     }
     std::cout << std::endl;
 
+#ifdef EMSCRIPTEN
+    // Download the binary file
+    EM_ASM({
+        const data = FS.readFile('data.bin');
+        const blob = new Blob([data], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'hello.bin';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+#endif
+
     app::shutdown_logger();
     return 0;
 }

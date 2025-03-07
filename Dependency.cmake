@@ -56,7 +56,7 @@ elseif(PLATFORM_MACOS)
 elseif(EMSCRIPTEN)
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
-  set(BOOST_EXTRA_OPTIONS "cxxstd=17" "cxxflags=-std=c++17")
+  set(BOOST_EXTRA_OPTIONS "cxxstd=17" "cxxflags=-std=c++17 -sMEMORY64=1 -pthread")
   message("boost options: ${BOOST_EXTRA_OPTIONS}")
 else()
   # Linux
@@ -66,12 +66,18 @@ else()
 endif()
 
 set(BOOST_COMPONENTS
-  --with-system
+  # --with-system
   --with-filesystem
-  --with-thread
-  --with-date_time
+  # --with-thread
+  # --with-date_time
   --with-serialization
 )
+
+if(EMSCRIPTEN)
+  set(BOOST_TOOLSET_OPTION "toolset=emscripten")
+else()
+  set(BOOST_TOOLSET_OPTION "")
+endif()
 
 ExternalProject_Add(
   dep_boost
@@ -81,23 +87,25 @@ ExternalProject_Add(
   UPDATE_COMMAND ""
   CONFIGURE_COMMAND cd <SOURCE_DIR> && ${BOOST_BOOTSTRAP_COMMAND}
   BUILD_COMMAND cd <SOURCE_DIR> && ${BOOST_B2_COMMAND} 
-      ${BOOST_COMPONENTS}
-      --prefix=${DEP_INSTALL_DIR}
-      --layout=system
-      variant=release
-      link=static
-      threading=multi
-      runtime-link=shared
-      ${BOOST_EXTRA_OPTIONS}
-      install
+    ${BOOST_COMPONENTS}
+    --prefix=${DEP_INSTALL_DIR}
+    --layout=system
+    ${BOOST_TOOLSET_OPTION}
+    variant=release
+    link=static
+    # threading=multi
+    runtime-link=shared
+    ${BOOST_EXTRA_OPTIONS}
+    install
   INSTALL_COMMAND ""
   BUILD_IN_SOURCE 1
 )
+
 set(DEP_LIST ${DEP_LIST} dep_boost)
 set(DEP_LIBS ${DEP_LIBS}
-  boost_system
+  # boost_system
   boost_filesystem
-  boost_thread
-  boost_date_time
+  # boost_thread
+  # boost_date_time
   boost_serialization
 )
