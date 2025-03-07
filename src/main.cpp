@@ -5,6 +5,10 @@
 #ifdef EMSCRIPTEN
     #include <emscripten.h>
 #endif
+#include <iostream>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 #define NUM_THREADS 4
 
@@ -107,6 +111,34 @@ bool read_binary_file(const std::string& filename) {
     return true;
 }
 
+void saveData(const std::vector<int>& data, const std::string& filename) {
+    std::ofstream file(filename, std::ios::binary);
+    if (!file) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return;
+    }
+    
+    boost::archive::binary_oarchive oa(file);
+    oa << data;
+    
+    std::cout << "Data stored in " << filename << std::endl;
+}
+
+std::vector<int> loadData(const std::string& filename) {
+    std::vector<int> data;
+    std::ifstream file(filename, std::ios::binary);
+    if (!file) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+        return data;
+    }
+    
+    boost::archive::binary_iarchive ia(file);
+    ia >> data;
+    
+    std::cout << "Data loaded from " << filename << std::endl;
+    return data;
+}
+
 #ifdef EMSCRIPTEN
 void main_loop() {
     // This function will be called repeatedly by the browser.
@@ -146,22 +178,24 @@ void main_loop() {
 
 int main() {
     app::init_logger();
-    
-    // Create worker thread
-    std::thread worker(worker_function);
-#ifdef EMSCRIPTEN
-    // Detach the worker thread from the main thread
-    worker.detach();
-    emscripten_set_main_loop(main_loop, 0, true);
-#else
-    // Join the worker thread with the main thread on native environment
-    worker.join();
-#endif
 
-    // Read binary file
-    if (!read_binary_file("hello.bin")) {
-        return 1;
+    std::vector<int> myData = {1, 3, 5};
+    const std::string filename = "data.bin";   
+    saveData(myData, filename);
+    
+    std::cout << "Saved data: ";
+    for (const auto& value : myData) {
+        std::cout << value << " ";
     }
+    std::cout << std::endl;
+    
+    std::vector<int> loadedData = loadData(filename);
+    
+    std::cout << "Loaded data: ";
+    for (const auto& value : loadedData) {
+        std::cout << value << " ";
+    }
+    std::cout << std::endl;
 
     app::shutdown_logger();
     return 0;
