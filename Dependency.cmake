@@ -39,51 +39,43 @@ set(DEP_LIST ${DEP_LIST} dep-spdlog)
 set(DEP_LIBS ${DEP_LIBS} spdlog$<$<CONFIG:Debug>:d>)
 
 # Boost
-# Need to check the latest version and the download URL from https://www.boost.org/users/download/
-set(BOOST_VERSION "1.87.0")
-set(BOOST_VERSION_UNDERSCORE "1_87_0")
-set(BOOST_URL "https://archives.boost.io/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_UNDERSCORE}.tar.gz")
-set(BOOST_SHA256 "f55c340aa49763b1925ccf02b2e83f35fdcf634c9d5164a2acb87540173c741d")
-
-if(PLATFORM_WINDOWS)
+if(WIN32)
   set(BOOST_BOOTSTRAP_COMMAND bootstrap.bat)
   set(BOOST_B2_COMMAND b2.exe)
   set(BOOST_EXTRA_OPTIONS "toolset=msvc" "cxxstd=17")
-elseif(PLATFORM_MACOS)
+  message("Windows")
+elseif(APPLE)
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
   set(BOOST_EXTRA_OPTIONS "toolset=clang" "cxxstd=17")
+  message("MacOS")
 elseif(EMSCRIPTEN)
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
   set(BOOST_EXTRA_OPTIONS "toolset=emscripten" "cxxstd=17" "cxxflags=-std=c++17 -sMEMORY64=1 -pthread")
-  message("boost options: ${BOOST_EXTRA_OPTIONS}")
+  message("Emscripten")
 else()
-  # Linux
   set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
   set(BOOST_B2_COMMAND ./b2)
-  set(BOOST_EXTRA_OPTIONS "cxxstd=17")
+  set(BOOST_EXTRA_OPTIONS "toolset=clang" "cxxstd=17")
+  message("Linux")
 endif()
 
-set(BOOST_COMPONENTS
-  # --with-system
-  --with-filesystem
-  # --with-thread
-  # --with-date_time
-  --with-serialization
-)
-
 ExternalProject_Add(
-  dep_boost
-  DOWNLOAD_EXTRACT_TIMESTAMP TRUE
-  URL ${BOOST_URL}
-  URL_HASH SHA256=${BOOST_SHA256}
+  dep-boost
+  GIT_REPOSITORY "https://github.com/boostorg/boost.git"
+  GIT_TAG "boost-1.87.0"
+  GIT_SHALLOW 1
   UPDATE_COMMAND ""
+  PATCH_COMMAND ""
   CONFIGURE_COMMAND cd <SOURCE_DIR> && ${BOOST_BOOTSTRAP_COMMAND}
-  BUILD_COMMAND cd <SOURCE_DIR> && ${BOOST_B2_COMMAND} 
-    ${BOOST_COMPONENTS}
+  BUILD_COMMAND cd <SOURCE_DIR> && ${BOOST_B2_COMMAND} install 
     --prefix=${DEP_INSTALL_DIR}
-    --layout=system
+    --with-system 
+    --with-filesystem 
+    # --with-thread 
+    --with-date_time
+    --with-serialization
     variant=release
     link=static
     # threading=multi
@@ -91,14 +83,12 @@ ExternalProject_Add(
     ${BOOST_EXTRA_OPTIONS}
     install
   INSTALL_COMMAND ""
-  BUILD_IN_SOURCE 1
 )
-
-set(DEP_LIST ${DEP_LIST} dep_boost)
+set(DEP_LIST ${DEP_LIST} dep-boost)
 set(DEP_LIBS ${DEP_LIBS}
-  # boost_system
+  boost_system
   boost_filesystem
   # boost_thread
-  # boost_date_time
+  boost_date_time
   boost_serialization
 )
