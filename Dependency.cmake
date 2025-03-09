@@ -38,57 +38,19 @@ ExternalProject_Add(
 set(DEP_LIST ${DEP_LIST} dep-spdlog)
 set(DEP_LIBS ${DEP_LIBS} spdlog$<$<CONFIG:Debug>:d>)
 
-# Boost
-if(WIN32)
-  set(BOOST_BOOTSTRAP_COMMAND bootstrap.bat)
-  set(BOOST_B2_COMMAND b2.exe)
-  set(BOOST_EXTRA_OPTIONS "toolset=msvc" "cxxstd=17")
-  message("Windows")
-elseif(APPLE)
-  set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
-  set(BOOST_B2_COMMAND ./b2)
-  set(BOOST_EXTRA_OPTIONS "toolset=clang" "cxxstd=17")
-  message("MacOS")
-elseif(EMSCRIPTEN)
-  set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
-  set(BOOST_B2_COMMAND ./b2)
-  set(BOOST_EXTRA_OPTIONS "toolset=emscripten" "cxxstd=17" "cxxflags=-std=c++17 -sMEMORY64=1 -pthread")
-  message("Emscripten")
-else()
-  set(BOOST_BOOTSTRAP_COMMAND ./bootstrap.sh)
-  set(BOOST_B2_COMMAND ./b2)
-  set(BOOST_EXTRA_OPTIONS "toolset=clang" "cxxstd=17")
-  message("Linux")
-endif()
-
+# Cereal: serialization library
 ExternalProject_Add(
-  dep-boost
-  GIT_REPOSITORY "https://github.com/boostorg/boost.git"
-  GIT_TAG "boost-1.87.0"
-  GIT_SHALLOW 1
-  UPDATE_COMMAND ""
-  PATCH_COMMAND ""
-  CONFIGURE_COMMAND cd <SOURCE_DIR> && ${BOOST_BOOTSTRAP_COMMAND}
-  BUILD_COMMAND cd <SOURCE_DIR> && ${BOOST_B2_COMMAND} install 
-    --prefix=${DEP_INSTALL_DIR}
-    --with-system 
-    --with-filesystem 
-    # --with-thread 
-    --with-date_time
-    --with-serialization
-    variant=release
-    link=static
-    # threading=multi
-    runtime-link=shared
-    ${BOOST_EXTRA_OPTIONS}
-    install
-  INSTALL_COMMAND ""
+    dep_cereal
+    GIT_REPOSITORY "https://github.com/USCiLab/cereal"
+    GIT_TAG "v1.3.2"
+    GIT_SHALLOW 1
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    TEST_COMMAND ""
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${PROJECT_BINARY_DIR}/dep_cereal-prefix/src/dep_cereal/include/cereal
+        ${DEP_INSTALL_DIR}/include/cereal
 )
-set(DEP_LIST ${DEP_LIST} dep-boost)
-set(DEP_LIBS ${DEP_LIBS}
-  boost_system
-  boost_filesystem
-  # boost_thread
-  boost_date_time
-  boost_serialization
-)
+set(DEP_LIST ${DEP_LIST} dep_cereal)
