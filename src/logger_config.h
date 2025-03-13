@@ -24,11 +24,11 @@
 // - SPDLOG_INFO, SPDLOG_WARN, SPDLOG_ERROR and SPDLOG_CRITICAL can be used.
 // - SPDLOG_DEBUG and SPDLOG_TRACE are not used in release build.
 
-namespace app {
-    // use_console: true - log to console, false - log to file
-    // new_file: true - create new log file, false - append to the previous log file
-    // If use_console is true, new_file is ignored.
-    void init_logger(bool use_console = true, bool new_file = true);
+namespace App {
+    // useConsole: true - log to console, false - log to file
+    // newFile: true - create new log file, false - append to the previous log file
+    // If useConsole is true, newFile is ignored.
+    void InitLogger(bool useConsole = true, bool newFile = true);
 
-    void shutdown_logger();
+    void ShutdownLogger();
 }

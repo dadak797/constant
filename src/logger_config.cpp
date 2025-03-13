@@ -6,15 +6,15 @@
 #include <spdlog/sinks/basic_file_sink.h>
 
 
-namespace app {
-    void init_logger(bool use_console, bool new_file) {
+namespace App {
+    void InitLogger(bool useConsole, bool newFile) {
         try {
-            if (use_console) {
+            if (useConsole) {
                 auto console = spdlog::stdout_color_mt("console");
                 spdlog::set_default_logger(console);
             }
             else {
-                auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/spdlog.log", new_file);
+                auto file_logger = spdlog::basic_logger_mt("file_logger", "logs/spdlog.log", newFile);
                 spdlog::set_default_logger(file_logger);
             }
         #ifdef DEBUG_BUILD
@@ -30,7 +30,7 @@ namespace app {
         }
     }
 
-    void shutdown_logger() {
+    void ShutdownLogger() {
         spdlog::shutdown();
     }
 }

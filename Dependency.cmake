@@ -54,3 +54,45 @@ ExternalProject_Add(
         ${DEP_INSTALL_DIR}/include/cereal
 )
 set(DEP_LIST ${DEP_LIST} dep_cereal)
+
+if (NOT EMSCRIPTEN)  # For emscripten, '-sUSE_GLFW=3' is used.
+  # glfw
+  ExternalProject_Add(
+    dep_glfw
+    GIT_REPOSITORY "https://github.com/glfw/glfw.git"
+    GIT_TAG "3.4"
+    GIT_SHALLOW 1
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    CMAKE_ARGS
+      -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
+      -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DGLFW_BUILD_EXAMPLES=OFF
+      -DGLFW_BUILD_TESTS=OFF
+      -DGLFW_BUILD_DOCS=OFF
+    TEST_COMMAND ""
+  )
+  set(DEP_LIST ${DEP_LIST} dep_glfw)
+  set(DEP_LIBS ${DEP_LIBS} glfw3)
+
+  # glad
+  ExternalProject_Add(
+    dep_glad
+    GIT_REPOSITORY "https://github.com/Dav1dde/glad.git"
+    GIT_TAG "v0.1.36"
+    GIT_SHALLOW 1
+    UPDATE_COMMAND ""
+    PATCH_COMMAND ""
+    CMAKE_ARGS
+      -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
+      -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DGLAD_INSTALL=ON
+      -DGLAD_API="gl=3.3"
+      -DGLAD_PROFILE="core"
+    TEST_COMMAND ""
+  )
+  set(DEP_LIST ${DEP_LIST} dep_glad)
+  set(DEP_LIBS ${DEP_LIBS} glad)
+endif()

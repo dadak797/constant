@@ -4,7 +4,7 @@ set(PROJECT_NAME Constant)
 
 set(WINDOW_NAME "Constant")
 set(WINDOW_WIDTH 960)
-set(WINDOW_HEIGHT 600)
+set(WINDOW_HEIGHT 540)
 
 # C++ 17
 set(CMAKE_CXX_STANDARD 17)
@@ -63,6 +63,7 @@ if (EMSCRIPTEN)
     "SHELL:-sUSE_WEBGL2=1"
     "SHELL:-sMODULARIZE=1"
     "SHELL:-sEXPORT_NAME='Viewer'"
+    "SHELL:-s USE_GLFW=3"
     # "SHELL:--extern-post-js ${CMAKE_SOURCE_DIR}/src/post-js.js"
     # "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/webassembly/resources/@/resources/"
     "SHELL:-sALLOW_MEMORY_GROWTH=1"
