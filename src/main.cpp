@@ -129,7 +129,10 @@ int main()
     auto glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     SPDLOG_DEBUG("OpenGL context version: {}", glVersion);
 
+    // For the first window, run this callback once
     OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    // Set glfw callbacks
     glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
     glfwSetKeyCallback(window, OnKeyEvent);
 
