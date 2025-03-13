@@ -8,6 +8,8 @@
     #include <glad/glad.h>
 #endif
 #include <GLFW/glfw3.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 
 
 #ifdef __EMSCRIPTEN__
@@ -20,6 +22,7 @@
     #define EMSCRIPTEN_MAINLOOP_BEGIN
     #define EMSCRIPTEN_MAINLOOP_END
 #endif
+
 
 void OnGlfwError(int errorCode, const char* description)
 {
@@ -63,6 +66,7 @@ void OnFramebufferSizeChange(GLFWwindow* window, int width, int height) {
 }
 
 void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     SPDLOG_DEBUG("key: {}, scancode: {}, action: {}, mods: {}{}{}",
         key, scancode,
         action == GLFW_PRESS ? "Pressed" :
@@ -74,6 +78,24 @@ void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
+}
+
+void OnCharEvent(GLFWwindow* window, unsigned int ch) {
+    ImGui_ImplGlfw_CharCallback(window, ch);
+}
+
+void OnScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
+    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+}
+
+void OnMouseButtonEvent(GLFWwindow* window, int button, int action, int mods)
+{
+    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+}
+
+void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos)
+{
+    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 }
 
 void Render() {
@@ -129,12 +151,59 @@ int main()
     auto glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
     SPDLOG_DEBUG("OpenGL context version: {}", glVersion);
 
+    // Setup ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+    io.Fonts->AddFontFromFileTTF("./resources/font/Roboto-Light.ttf", 13.0f);
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+    ImGuiStyle& style = ImGui::GetStyle();
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+    {
+        style.WindowRounding = 0.0f;
+        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    }
+
+#ifdef __EMSCRIPTEN__
+    const float dpRatio = emscripten_get_device_pixel_ratio();
+    io.FontGlobalScale = dpRatio;
+    style.ScaleAllSizes(dpRatio);
+#endif
+
+#ifdef __EMSCRIPTEN__
+    const char* glsl_version = "#version 300 es";    // OpenGL ES for WebGL
+#else
+    const char* glsl_version = "#version 330 core";  // Native OpenGL
+#endif
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(window, false);
+#ifdef __EMSCRIPTEN__
+    ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
+#endif
+    ImGui_ImplOpenGL3_Init(glsl_version);
+
+#ifdef __EMSCRIPTEN__
+    io.IniFilename = nullptr;
+#endif
+
     // For the first window, run this callback once
     OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     // Set glfw callbacks
     glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
     glfwSetKeyCallback(window, OnKeyEvent);
+    glfwSetCharCallback(window, OnCharEvent);
+    glfwSetCursorPosCallback(window, OnMouseMoveEvent);
+    glfwSetMouseButtonCallback(window, OnMouseButtonEvent);
+    glfwSetScrollCallback(window, OnScrollEvent);
 
     // Main loop
     SPDLOG_DEBUG("Start main loop");
@@ -145,13 +214,49 @@ int main()
 #endif
     {
         glfwPollEvents();
+        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
+        {
+            ImGui_ImplGlfw_Sleep(10);
+            continue;
+        }
+
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
         Render();
+
+        static bool show_demo_window = true;
+        if (show_demo_window)
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+        // Update and Render additional Platform Windows
+        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
+        //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
+        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+        {
+            GLFWwindow* backup_current_context = glfwGetCurrentContext();
+            ImGui::UpdatePlatformWindows();
+            ImGui::RenderPlatformWindowsDefault();
+            glfwMakeContextCurrent(backup_current_context);
+        }
+
         glfwSwapBuffers(window);
     }
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
 #endif
 
+    // Cleanup
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
+    glfwDestroyWindow(window);
     glfwTerminate();
 
     App::ShutdownLogger();

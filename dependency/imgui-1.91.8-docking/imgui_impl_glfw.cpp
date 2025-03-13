@@ -998,18 +998,38 @@ void ImGui_ImplGlfw_Sleep(int milliseconds)
 static EM_BOOL ImGui_ImplGlfw_OnCanvasSizeChange(int event_type, const EmscriptenUiEvent* event, void* user_data)
 {
     ImGui_ImplGlfw_Data* bd = (ImGui_ImplGlfw_Data*)user_data;
-    double canvas_width, canvas_height;
-    emscripten_get_element_css_size(bd->CanvasSelector, &canvas_width, &canvas_height);
-    glfwSetWindowSize(bd->Window, (int)canvas_width, (int)canvas_height);
+    
+    // Get canvas size
+    int width, height;
+    emscripten_get_canvas_element_size(bd->CanvasSelector, &width, &height);
+
+    // Get canvas css size
+    double css_width, css_height;
+    emscripten_get_element_css_size(bd->CanvasSelector, &css_width, &css_height);
+    
+    // Set window size and css size
+    glfwSetWindowSize(bd->Window, width, height);
+    emscripten_set_element_css_size(bd->CanvasSelector, css_width, css_height);
+    
     return true;
 }
 
 static EM_BOOL ImGui_ImplEmscripten_FullscreenChangeCallback(int event_type, const EmscriptenFullscreenChangeEvent* event, void* user_data)
 {
     ImGui_ImplGlfw_Data* bd = (ImGui_ImplGlfw_Data*)user_data;
-    double canvas_width, canvas_height;
-    emscripten_get_element_css_size(bd->CanvasSelector, &canvas_width, &canvas_height);
-    glfwSetWindowSize(bd->Window, (int)canvas_width, (int)canvas_height);
+
+    // Get canvas size
+    int width, height;
+    emscripten_get_canvas_element_size(bd->CanvasSelector, &width, &height);
+
+    // Get canvas css size
+    double css_width, css_height;
+    emscripten_get_element_css_size(bd->CanvasSelector, &css_width, &css_height);
+    
+    // Set window size and css size
+    glfwSetWindowSize(bd->Window, width, height);
+    emscripten_set_element_css_size(bd->CanvasSelector, css_width, css_height);
+
     return true;
 }
 

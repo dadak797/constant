@@ -17,3 +17,6 @@ build-wasm/
 
 # log file
 logs/
+
+# imgui
+imgui.ini

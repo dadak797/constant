@@ -64,11 +64,11 @@ if (EMSCRIPTEN)
     "SHELL:-sEXPORT_NAME='Viewer'"
     "SHELL:-s USE_GLFW=3"
     # "SHELL:--extern-post-js ${CMAKE_SOURCE_DIR}/src/post-js.js"
-    # "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/webassembly/resources/@/resources/"
+    "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/resources/@/resources/"
     "SHELL:-sALLOW_MEMORY_GROWTH=1"
     # "SHELL:-sTOTAL_MEMORY=256MB"
-    "SHELL:-sMAXIMUM_MEMORY=16GB"
-    "SHELL:-sUSE_PTHREADS=1" 
+    "SHELL:-sMAXIMUM_MEMORY=4GB"
+    "SHELL:-sUSE_PTHREADS=1"
     "SHELL:-sPTHREAD_POOL_SIZE=5"
     # "SHELL:-sPROXY_TO_PTHREAD=1"
     "SHELL:-sNO_EXIT_RUNTIME=1"
@@ -105,7 +105,7 @@ if (EMSCRIPTEN)
 
   install(
     FILES
-      # ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.data
+      ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.data
       ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.wasm
       ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.js
     DESTINATION "${CMAKE_SOURCE_DIR}/wasm"
