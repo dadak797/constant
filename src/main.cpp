@@ -23,6 +23,107 @@
     #define EMSCRIPTEN_MAINLOOP_END
 #endif
 
+// Scene parameters
+GLuint sceneFramebuffer = 0;
+GLuint sceneColorTexture = 0;
+GLuint sceneDepthTexture = 0;
+int sceneWidth = 800;
+int sceneHeight = 600;
+
+void InitSceneFramebuffer() {
+    if (sceneFramebuffer != 0) {
+        glDeleteFramebuffers(1, &sceneFramebuffer);
+        glDeleteTextures(1, &sceneColorTexture);
+        glDeleteTextures(1, &sceneDepthTexture);
+    }
+
+    // Create framebuffer
+    glGenFramebuffers(1, &sceneFramebuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, sceneFramebuffer);
+
+    // Create color texture
+    glGenTextures(1, &sceneColorTexture);
+    glBindTexture(GL_TEXTURE_2D, sceneColorTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sceneWidth, sceneHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColorTexture, 0);
+
+    // Create depth texture
+    glGenTextures(1, &sceneDepthTexture);
+    glBindTexture(GL_TEXTURE_2D, sceneDepthTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, sceneWidth, sceneHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, sceneDepthTexture, 0);
+
+    // Check framebuffer status
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+        SPDLOG_ERROR("Scene framebuffer is not complete!");
+    }
+
+    // Bind to default buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    SPDLOG_DEBUG("Scene framebuffer initialized: ({} x {})", sceneWidth, sceneHeight);
+}
+
+void ResizeSceneFramebuffer(int width, int height) {
+    if (width <= 0 || height <= 0)
+        return;
+
+    sceneWidth = width;
+    sceneHeight = height;
+    
+    InitSceneFramebuffer();
+}
+
+void RenderScene() {
+    // Bind scene framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, sceneFramebuffer);
+    glViewport(0, 0, sceneWidth, sceneHeight);
+
+    // Render background
+    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    // Bind to default framebuffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void CleanupSceneFramebuffer() {
+    if (sceneFramebuffer != 0) {
+        glDeleteFramebuffers(1, &sceneFramebuffer);
+        glDeleteTextures(1, &sceneColorTexture);
+        glDeleteTextures(1, &sceneDepthTexture);
+        sceneFramebuffer = 0;
+        sceneColorTexture = 0;
+        sceneDepthTexture = 0;
+    }
+}
+
+void ShowSceneWindow() {
+    // Remove padding
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+    ImGui::Begin("Scene");
+    
+    // Resize framebuffer
+    ImVec2 contentSize = ImGui::GetContentRegionAvail();
+    if (contentSize.x > 0 && contentSize.y > 0 && 
+        (sceneWidth != (int)contentSize.x || sceneHeight != (int)contentSize.y)) {
+        ResizeSceneFramebuffer((int)contentSize.x, (int)contentSize.y);
+    }
+    
+    // Draw scene to framebuffer
+    ImGui::Image((ImTextureID)(intptr_t)sceneColorTexture, 
+                 ImVec2(sceneWidth, sceneHeight), 
+                 ImVec2(0, 1), ImVec2(1, 0));  // Upside down of the texture y-coordinate
+    
+    ImGui::End();
+
+    ImGui::PopStyleVar();
+}
 
 void OnGlfwError(int errorCode, const char* description)
 {
@@ -75,9 +176,6 @@ void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
         mods & GLFW_MOD_CONTROL ? "C" : "-",
         mods & GLFW_MOD_SHIFT ? "S" : "-",
         mods & GLFW_MOD_ALT ? "A" : "-");
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
 }
 
 void OnCharEvent(GLFWwindow* window, unsigned int ch) {
@@ -98,9 +196,69 @@ void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos)
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 }
 
-void Render() {
-    glClearColor(0.1f, 0.2f, 0.3f, 0.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+void SetupDockSpace(bool* p_open) {
+    static bool opt_fullscreen = true;
+    static bool opt_padding = false;
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+
+    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+    // because it would be confusing to have two docking targets within each others.
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    if (opt_fullscreen) {
+        const ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->WorkPos);
+        ImGui::SetNextWindowSize(viewport->WorkSize);
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+    } else {
+        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+    }
+
+    // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
+    // and handle the pass-thru hole, so we ask Begin() to not render a background.
+    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+        window_flags |= ImGuiWindowFlags_NoBackground;
+
+    // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
+    // all active windows docked into it will lose their parent and become undocked.
+    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
+    // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+    if (!opt_padding)
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace Demo", p_open, window_flags);
+    if (!opt_padding)
+        ImGui::PopStyleVar();
+
+    if (opt_fullscreen)
+        ImGui::PopStyleVar(2);
+
+    // Submit the DockSpace
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
+        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    }
+
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("Menu")) {
+            // Disabling fullscreen would allow the window to be moved to the front of other windows,
+            // which we can't undo at the moment without finer window depth/z control.
+            ImGui::MenuItem("New", NULL, &opt_fullscreen);
+            ImGui::MenuItem("Load", NULL, &opt_padding);
+            ImGui::Separator();
+
+            if (ImGui::MenuItem("Close", NULL, false, p_open != NULL))
+                *p_open = false;
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
+
+    ImGui::End();
 }
 
 int main()
@@ -155,10 +313,14 @@ int main()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    io.Fonts->AddFontFromFileTTF("./resources/font/Roboto-Light.ttf", 13.0f);
+    io.ConfigViewportsNoAutoMerge = false;
+    io.ConfigViewportsNoTaskBarIcon = true;
+    io.ConfigDockingTransparentPayload = true;
+
+    io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -169,6 +331,12 @@ int main()
     {
         style.WindowRounding = 0.0f;
         style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+        style.WindowPadding = ImVec2(8.0f, 8.0f);
+        style.FramePadding = ImVec2(5.0f, 3.0f);
+        style.FrameRounding = 3.0f;
+        style.TabRounding = 3.0f;
+        style.ScrollbarRounding = 3.0f;
+        style.GrabRounding = 3.0f;
     }
 
 #ifdef __EMSCRIPTEN__
@@ -184,11 +352,14 @@ int main()
 #endif
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, false);
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
 #ifdef __EMSCRIPTEN__
     ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
 #endif
     ImGui_ImplOpenGL3_Init(glsl_version);
+
+    // Scene 프레임버퍼 초기화
+    InitSceneFramebuffer();
 
 #ifdef __EMSCRIPTEN__
     io.IniFilename = nullptr;
@@ -225,13 +396,27 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        Render();
+        static bool dockspaceOpen = true;
+        SetupDockSpace(&dockspaceOpen);
+        
+        RenderScene();
+        ShowSceneWindow();
 
         static bool show_demo_window = true;
         if (show_demo_window)
             ImGui::ShowDemoWindow(&show_demo_window);
 
+        ImGui::Begin("My Window");
+        ImGui::Text("Hello, world!");
+        ImGui::End();
+
         ImGui::Render();
+        
+        // Clear default framebuffer to black
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // Update and Render additional Platform Windows
@@ -250,6 +435,8 @@ int main()
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
 #endif
+
+    CleanupSceneFramebuffer();
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
