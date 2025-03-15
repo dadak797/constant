@@ -23,6 +23,65 @@
     #define EMSCRIPTEN_MAINLOOP_END
 #endif
 
+#ifdef __EMSCRIPTEN__
+    #include <emscripten/bind.h>
+    #include <fstream>
+
+    const char* IDBFS_MOUNT_PATH = "/settings";
+    const char* IMGUI_SETTING_FILE_PATH = "/settings/imgui.ini";
+
+    void InitIdbfs()
+    {
+        // IDBFS mount
+        EM_ASM({
+            const path = UTF8ToString($0);
+            Constant.FS.mkdir(path);
+            Constant.FS.mount(IDBFS, {}, path); 
+            console.log(`IDBFS mounted on "${path}"`);
+        }, IDBFS_MOUNT_PATH);
+    }
+
+    void SaveImGuiIniFile()
+    {
+        std::string settingFilePath(IMGUI_SETTING_FILE_PATH);
+
+        std::ofstream outfile;
+        outfile.open(settingFilePath, std::ios::out);
+
+        // Get ImGui setting data
+        size_t dataSize = 0;
+        const char* data = ImGui::SaveIniSettingsToMemory(&dataSize);
+
+        outfile.write(data, dataSize);
+        outfile.close();
+    }
+
+    void LoadImGuiIniFile()
+    {
+        std::string settingFilePath(IMGUI_SETTING_FILE_PATH);
+
+        std::ifstream fin(settingFilePath, std::ifstream::in);
+        if (!fin) {
+            SPDLOG_DEBUG("Failed to find ImGui setting file!");
+            return;
+        }
+
+        std::ostringstream ss;
+        ss << fin.rdbuf();
+        fin.close();
+        std::string fileContents = ss.str();
+
+        ImGui::LoadIniSettingsFromMemory(fileContents.c_str(), fileContents.size());
+    }
+
+    // Module exports
+    EMSCRIPTEN_BINDINGS(Viewer) {
+        emscripten::function("initIdbfs", &InitIdbfs);
+        emscripten::function("saveImGuiIniFile", &SaveImGuiIniFile);
+        emscripten::function("loadImGuiIniFile", &LoadImGuiIniFile);
+    }
+#endif
+
 // Scene parameters
 GLuint sceneFramebuffer = 0;
 GLuint sceneColorTexture = 0;
@@ -196,67 +255,72 @@ void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos)
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 }
 
-void SetupDockSpace(bool* p_open) {
-    static bool opt_fullscreen = true;
-    static bool opt_padding = false;
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+void SetupDockSpace() {
+    static bool fullDockSpace = true;
+    static bool showDemoWindow = false;
+
+    static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
 
     // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
     // because it would be confusing to have two docking targets within each others.
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    if (opt_fullscreen) {
+    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+    if (fullDockSpace) {
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->WorkPos);
         ImGui::SetNextWindowSize(viewport->WorkSize);
         ImGui::SetNextWindowViewport(viewport->ID);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
         ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+        windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
     } else {
-        dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+        dockspaceFlags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
     }
 
     // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
     // and handle the pass-thru hole, so we ask Begin() to not render a background.
-    if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
-        window_flags |= ImGuiWindowFlags_NoBackground;
+    if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
+        windowFlags |= ImGuiWindowFlags_NoBackground;
 
     // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
     // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
     // all active windows docked into it will lose their parent and become undocked.
     // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
     // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-    if (!opt_padding)
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace Demo", p_open, window_flags);
-    if (!opt_padding)
-        ImGui::PopStyleVar();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("DockSpace", nullptr, windowFlags);
+    ImGui::PopStyleVar();
 
-    if (opt_fullscreen)
+    if (fullDockSpace)
         ImGui::PopStyleVar(2);
 
     // Submit the DockSpace
     ImGuiIO& io = ImGui::GetIO();
     if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-        ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
     }
 
     if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu("Menu")) {
-            // Disabling fullscreen would allow the window to be moved to the front of other windows,
-            // which we can't undo at the moment without finer window depth/z control.
-            ImGui::MenuItem("New", NULL, &opt_fullscreen);
-            ImGui::MenuItem("Load", NULL, &opt_padding);
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Close", NULL, false, p_open != NULL))
-                *p_open = false;
+        if (ImGui::BeginMenu("File")) {
+            ImGui::MenuItem("New", nullptr, false, false);
+            ImGui::MenuItem("Load", nullptr, false, false);
+            ImGui::MenuItem("Save", nullptr, false, false);
             ImGui::EndMenu();
         }
+    #ifdef DEBUG_BUILD
+        if (ImGui::BeginMenu("Debugging")) {
+            ImGui::MenuItem("Full Dockspace", nullptr, &fullDockSpace);
+            ImGui::MenuItem("Show Demo Window", nullptr, &showDemoWindow);
+            ImGui::EndMenu();
+        }
+    #endif
         ImGui::EndMenuBar();
     }
+
+#ifdef DEBUG_BUILD
+    if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
+#endif
 
     ImGui::End();
 }
@@ -358,12 +422,7 @@ int main()
 #endif
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    // Scene 프레임버퍼 초기화
     InitSceneFramebuffer();
-
-#ifdef __EMSCRIPTEN__
-    io.IniFilename = nullptr;
-#endif
 
     // For the first window, run this callback once
     OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -396,15 +455,10 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        static bool dockspaceOpen = true;
-        SetupDockSpace(&dockspaceOpen);
+        SetupDockSpace();
         
         RenderScene();
         ShowSceneWindow();
-
-        static bool show_demo_window = true;
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
 
         ImGui::Begin("My Window");
         ImGui::Text("Hello, world!");

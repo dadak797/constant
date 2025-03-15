@@ -86,9 +86,14 @@
           },
         };
         
-        Viewer(moduleConfig).then(() => {
-          console.log("Viewer instance initialized.");
-        
+        Viewer(moduleConfig).then((module) => {
+          // Export module to global module - module name: "Constant"
+          window.Constant = module;
+          console.log("Module('Constant') instance initialized.");
+
+          // Mount IDBFS
+          Constant.initIdbfs();
+
           resizeCanvas();
         });
       };

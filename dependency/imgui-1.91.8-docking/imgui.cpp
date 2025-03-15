@@ -1119,6 +1119,10 @@ CODE
 #endif
 #endif
 
+#ifdef __EMSCRIPTEN__
+    #include <emscripten/emscripten.h>
+#endif
+
 // [Apple] OS specific includes
 #if defined(__APPLE__)
 #include <TargetConditionals.h>
@@ -4253,8 +4257,16 @@ void ImGui::Shutdown()
         return;
 
     // Save settings (unless we haven't attempted to load them: CreateContext/DestroyContext without a call to NewFrame shouldn't save an empty file)
-    if (g.SettingsLoaded && g.IO.IniFilename != NULL)
+    if (g.SettingsLoaded && g.IO.IniFilename != NULL) {
+    #ifdef __EMSCRIPTEN__
+        EM_ASM({
+            Constant.saveImGuiIniFile();
+            Constant.FS.syncfs(function() {});  // Synchronization with IDBFS
+        });
+    #else
         SaveIniSettingsToDisk(g.IO.IniFilename);
+    #endif
+    }
 
     // Destroy platform windows
     DestroyPlatformWindows();
@@ -15226,8 +15238,17 @@ void ImGui::UpdateSettings()
     if (!g.SettingsLoaded)
     {
         IM_ASSERT(g.SettingsWindows.empty());
-        if (g.IO.IniFilename)
+        if (g.IO.IniFilename) {
+        #ifdef __EMSCRIPTEN__
+            EM_ASM({
+                Constant.FS.syncfs(true, function() {
+                    Constant.loadImGuiIniFile();
+                });
+            });
+        #else
             LoadIniSettingsFromDisk(g.IO.IniFilename);
+        #endif
+        }
         g.SettingsLoaded = true;
     }
 
@@ -15237,8 +15258,16 @@ void ImGui::UpdateSettings()
         g.SettingsDirtyTimer -= g.IO.DeltaTime;
         if (g.SettingsDirtyTimer <= 0.0f)
         {
-            if (g.IO.IniFilename != NULL)
+            if (g.IO.IniFilename != NULL) {
+            #ifdef __EMSCRIPTEN__
+                EM_ASM({
+                    Constant.saveImGuiIniFile();
+                    Constant.FS.syncfs(function() {});  // Synchronization with IDBFS
+                });
+            #else
                 SaveIniSettingsToDisk(g.IO.IniFilename);
+            #endif
+            }
             else
                 g.IO.WantSaveIniSettings = true;  // Let user know they can call SaveIniSettingsToMemory(). user will need to clear io.WantSaveIniSettings themselves.
             g.SettingsDirtyTimer = 0.0f;

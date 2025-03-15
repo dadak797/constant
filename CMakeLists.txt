@@ -57,6 +57,9 @@ if (EMSCRIPTEN)
   set(EMSCRIPTEN_DEBUG_OPTIONS)
 
   list(APPEND EMSCRIPTEN_LINK_OPTIONS
+    "SHELL:--bind"
+    "SHELL:-lidbfs.js"  # IndexedDB File System
+    "SHELL:-sEXPORTED_RUNTIME_METHODS=['FS']"
     "SHELL:-sWASM=1"
     "SHELL:-sENVIRONMENT=web,worker"
     "SHELL:-sUSE_WEBGL2=1"
