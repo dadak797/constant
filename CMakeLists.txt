@@ -4,7 +4,7 @@ set(PROJECT_NAME Constant)
 
 set(WINDOW_NAME "Constant")
 set(WINDOW_WIDTH 960)
-set(WINDOW_HEIGHT 600)
+set(WINDOW_HEIGHT 540)
 
 # C++ 17
 set(CMAKE_CXX_STANDARD 17)
@@ -14,7 +14,6 @@ if (EMSCRIPTEN)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sMEMORY64=1 -pthread")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sMEMORY64=1 -pthread")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sMEMORY64=1 -pthread")
-  set(CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} -sMEMORY64=1 -pthread")
 endif()
 
 # Set project
@@ -58,17 +57,21 @@ if (EMSCRIPTEN)
   set(EMSCRIPTEN_DEBUG_OPTIONS)
 
   list(APPEND EMSCRIPTEN_LINK_OPTIONS
+    "SHELL:--bind"
+    "SHELL:-lidbfs.js"  # IndexedDB File System
+    "SHELL:-sEXPORTED_RUNTIME_METHODS=['FS']"
     "SHELL:-sWASM=1"
     "SHELL:-sENVIRONMENT=web,worker"
     "SHELL:-sUSE_WEBGL2=1"
     "SHELL:-sMODULARIZE=1"
     "SHELL:-sEXPORT_NAME='Viewer'"
+    "SHELL:-s USE_GLFW=3"
     # "SHELL:--extern-post-js ${CMAKE_SOURCE_DIR}/src/post-js.js"
-    # "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/webassembly/resources/@/resources/"
+    "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/resources/@/resources/"
     "SHELL:-sALLOW_MEMORY_GROWTH=1"
     # "SHELL:-sTOTAL_MEMORY=256MB"
-    "SHELL:-sMAXIMUM_MEMORY=16GB"
-    "SHELL:-sUSE_PTHREADS=1" 
+    "SHELL:-sMAXIMUM_MEMORY=4GB"
+    "SHELL:-sUSE_PTHREADS=1"
     "SHELL:-sPTHREAD_POOL_SIZE=5"
     # "SHELL:-sPROXY_TO_PTHREAD=1"
     "SHELL:-sNO_EXIT_RUNTIME=1"
@@ -105,7 +108,7 @@ if (EMSCRIPTEN)
 
   install(
     FILES
-      # ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.data
+      ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.data
       ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.wasm
       ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.js
     DESTINATION "${CMAKE_SOURCE_DIR}/wasm"
