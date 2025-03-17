@@ -5,8 +5,8 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_FAR "resources/icon/fa-regular-400.ttf"
-#define FONT_ICON_FILE_NAME_FAS "resources/icon/fa-solid-900.ttf"
+#define FONT_ICON_FILE_NAME_FAR "resources/icon/fa6-regular-400.ttf"
+#define FONT_ICON_FILE_NAME_FAS "resources/icon/fa6-solid-900.ttf"
 
 #define ICON_MIN_FA 0xe005
 #define ICON_MAX_16_FA 0xf8ff
@@ -924,7 +924,7 @@
 #define ICON_FA_PEOPLE_ROBBERY "\xee\x94\xb6"	// U+e536
 #define ICON_FA_PEOPLE_ROOF "\xee\x94\xb7"	// U+e537
 #define ICON_FA_PEPPER_HOT "\xef\xa0\x96"	// U+f816
-#define ICON_FA_PERCENT "%"	// U+0025
+#define ICON_FA_PERCENT "%%"	// U+0025
 #define ICON_FA_PERSON "\xef\x86\x83"	// U+f183
 #define ICON_FA_PERSON_ARROW_DOWN_TO_LINE "\xee\x94\xb8"	// U+e538
 #define ICON_FA_PERSON_ARROW_UP_FROM_LINE "\xee\x94\xb9"	// U+e539

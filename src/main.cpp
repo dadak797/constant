@@ -1,6 +1,8 @@
 #include "logger_config.h"
 #include "icon/IconsFontAwesome6.h"
 #include "icon/IconsFontAwesome6Brands.h"
+#include "font_icon.h"
+
 
 #ifdef __EMSCRIPTEN__
     #include <emscripten/emscripten.h>
@@ -99,8 +101,8 @@ GLuint sceneDepthTexture = 0;
 int sceneWidth = 800;
 int sceneHeight = 600;
 
-ImFont* g_fontRegular = nullptr;
 ImFont* g_fontSolid = nullptr;
+ImFont* g_fontRegular = nullptr;
 
 void InitSceneFramebuffer() {
     if (sceneFramebuffer != 0) {
@@ -270,7 +272,10 @@ void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos)
 
 void SetupDockSpace() {
     static bool fullDockSpace = true;
+#ifdef DEBUG_BUILD
     static bool showDemoWindow = false;
+    static bool showIconWindow = false;
+#endif
     static ViewerStyle viewerStyle = ViewerStyle::Dark;
 
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
@@ -369,6 +374,7 @@ void SetupDockSpace() {
         if (ImGui::BeginMenu("Debugging")) {
             ImGui::MenuItem("Full Dockspace", nullptr, &fullDockSpace);
             ImGui::MenuItem("Show Demo Window", nullptr, &showDemoWindow);
+            ImGui::MenuItem("Show Icons", nullptr, &showIconWindow);
             ImGui::EndMenu();
         }
     #endif
@@ -377,6 +383,7 @@ void SetupDockSpace() {
 
 #ifdef DEBUG_BUILD
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
+    if (showIconWindow) App::DrawFontIcons(&showIconWindow);
 #endif
 
     ImGui::End();
@@ -442,8 +449,8 @@ int main()
     io.ConfigDockingTransparentPayload = true;
 
     // Setup fonts
-    static const ImWchar icons_fa6_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
-    static const ImWchar icons_fa6b_ranges[] = { ICON_MIN_FAB, ICON_MAX_FAB, 0 };
+    static const ImWchar icons_fa6_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
+    static const ImWchar icons_fa6b_ranges[] = { ICON_MIN_FAB, ICON_MAX_16_FAB, 0 };
     
     ImFontConfig font_config;
     font_config.MergeMode = true;  // Merge to previous font
@@ -451,13 +458,13 @@ int main()
     font_config.GlyphMinAdvanceX = 13.0f;
 
     // Font 1: NotoSansKR + fa-regular + fa-brands
-    g_fontRegular = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAR, 13.0f, &font_config, icons_fa6_ranges);   // fa-regular
+    g_fontSolid = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, 13.0f, &font_config, icons_fa6_ranges);   // fa-solid
     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAB, 13.0f, &font_config, icons_fa6b_ranges);  // fa-brands
 
     // Font 2: NotoSansKR + fa-regular + fa-brands
-    g_fontSolid = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, 13.0f, &font_config, icons_fa6_ranges);   // fa-solid
+    g_fontRegular = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAR, 13.0f, &font_config, icons_fa6_ranges);   // fa-regular
     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAB, 13.0f, &font_config, icons_fa6b_ranges);  // fa-brands
 
     // Setup Dear ImGui style
@@ -535,7 +542,6 @@ int main()
         ShowSceneWindow();
 
         ImGui::Begin("My Window");
-        ImGui::Text("Hello, world!");
 
         ImGui::PushFont(g_fontRegular);
         ImGui::Text("%s Regular Icon", ICON_FA_ADDRESS_BOOK);

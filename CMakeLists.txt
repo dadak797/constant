@@ -23,6 +23,7 @@ project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}
   src/main.cpp
   src/logger_config.cpp    src/logger_config.h
+  src/font_icon.cpp        src/font_icon.h
 )
 
 if (MSVC)
