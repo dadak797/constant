@@ -5,9 +5,9 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_MSO "MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].ttf"
-#define FONT_ICON_FILE_NAME_MSR "MaterialSymbolsRounded[FILL,GRAD,opsz,wght].ttf"
-#define FONT_ICON_FILE_NAME_MSS "MaterialSymbolsSharp[FILL,GRAD,opsz,wght].ttf"
+#define FONT_ICON_FILE_NAME_MSO "MaterialSymbolsOutlined.ttf"
+#define FONT_ICON_FILE_NAME_MSR "MaterialSymbolsRounded.ttf"
+#define FONT_ICON_FILE_NAME_MSS "MaterialSymbolsSharp.ttf"
 
 #define ICON_MIN_MS 0xe003
 #define ICON_MAX_16_MS 0xf8ff

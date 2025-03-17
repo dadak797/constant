@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_FAB "resources/icon/fa5-brands-400.ttf"
+#define FONT_ICON_FILE_NAME_FAB "resources/icon/FontAwesome5-Brands.ttf"
 
 #define ICON_MIN_FAB 0xe007
 #define ICON_MAX_16_FAB 0xf8e8

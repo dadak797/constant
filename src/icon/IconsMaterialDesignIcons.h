@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_MDI "materialdesignicons-webfont.ttf"
+#define FONT_ICON_FILE_NAME_MDI "resources/icon/MaterialDesignIcons-Webfont.ttf"
 
 #define ICON_MIN_MDI 0xF68C
 #define ICON_MAX_16_MDI 0xF68C

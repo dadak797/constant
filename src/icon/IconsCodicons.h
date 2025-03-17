@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_CI "codicon.ttf"
+#define FONT_ICON_FILE_NAME_CI "resources/icon/Codicon.ttf"
 
 #define ICON_MIN_CI 0xea60
 #define ICON_MAX_16_CI 0xf101

@@ -5,8 +5,8 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_FAR "resources/icon/fa5-regular-400.ttf"
-#define FONT_ICON_FILE_NAME_FAS "resources/icon/fa5-solid-900.ttf"
+#define FONT_ICON_FILE_NAME_FAR "resources/icon/FontAwesome5-Regular.ttf"
+#define FONT_ICON_FILE_NAME_FAS "resources/icon/FontAwesome5-Solid.ttf"
 
 #define ICON_MIN_FA 0xe005
 #define ICON_MAX_16_FA 0xf8ff

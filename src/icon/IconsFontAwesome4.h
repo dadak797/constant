@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_FA "fontawesome-webfont.ttf"
+#define FONT_ICON_FILE_NAME_FA "resources/icon/FontAwesome-Webfont.ttf"
 
 #define ICON_MIN_FA 0xf000
 #define ICON_MAX_16_FA 0xf2e0

@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_LC "lucide.ttf"
+#define FONT_ICON_FILE_NAME_LC "resources/icon/Lucide.ttf"
 
 #define ICON_MIN_LC 0xe038
 #define ICON_MAX_16_LC 0xe64c

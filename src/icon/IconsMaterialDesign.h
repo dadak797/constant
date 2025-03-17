@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_MD "MaterialIcons-Regular.ttf"
+#define FONT_ICON_FILE_NAME_MD "resources/icon/MaterialIcons-Regular.ttf"
 
 #define ICON_MIN_MD 0xe000
 #define ICON_MAX_16_MD 0xf8ff

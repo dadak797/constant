@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_KI "kenney-icon-font.ttf"
+#define FONT_ICON_FILE_NAME_KI "resources/icon/Kenney-Icon-Font.ttf"
 
 #define ICON_MIN_KI 0xe900
 #define ICON_MAX_16_KI 0xe9e3

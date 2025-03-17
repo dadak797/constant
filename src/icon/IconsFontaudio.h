@@ -5,7 +5,7 @@
 
 #pragma once
 
-#define FONT_ICON_FILE_NAME_FAD "fontaudio.ttf"
+#define FONT_ICON_FILE_NAME_FAD "resources/icon/FontAudio.ttf"
 
 #define ICON_MIN_FAD 0xf101
 #define ICON_MAX_16_FAD 0xf19b
