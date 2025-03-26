@@ -1,6 +1,20 @@
 # This code is to generate C++ code for displaying icons and their names using ImGui.
 
-fileNames = [('IconsFontAwesome6.h', 'ICON_FA'), ('IconsFontAwesome6Brands.h', 'ICON_FA')]
+fileNames = [
+    ('FontAwesome6.h', 'ICON_FA6'),
+    ('FontAwesome6Brands.h', 'ICON_FA6'),
+    ('FontAwesome5.h', 'ICON_FA5'),
+    ('FontAwesome5Brands.h', 'ICON_FA5'),
+    ('FontAwesome4.h', 'ICON_FA4'),
+    ('CodIcons.h', 'ICON_CI'),
+    ('FontAudio.h', 'ICON_FAD'),
+    ('ForkAwesome.h', 'ICON_FK'),
+    ('Kenney.h', 'ICON_KI'),
+    ('Lucide.h', 'ICON_LC'),
+    ('MaterialDesign.h', 'ICON_MD'),
+    ('MaterialDesignIcons.h', 'ICON_MDI'),
+    ('MaterialSymbols.h', 'ICON_MS')
+]
 
 def extract_icon_macros(fileName, prefix):
     iconMacros = []

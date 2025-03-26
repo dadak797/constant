@@ -23,7 +23,7 @@ project(${PROJECT_NAME})
 add_executable(${PROJECT_NAME}
   src/main.cpp
   src/logger_config.cpp    src/logger_config.h
-  src/font_icon.cpp        src/font_icon.h
+  src/font_manager.cpp     src/font_manager.h
 )
 
 if (MSVC)
@@ -66,7 +66,7 @@ if (EMSCRIPTEN)
     "SHELL:-sUSE_WEBGL2=1"
     "SHELL:-sMODULARIZE=1"
     "SHELL:-sEXPORT_NAME='Viewer'"
-    "SHELL:-s USE_GLFW=3"
+    "SHELL:-sUSE_GLFW=3"
     # "SHELL:--extern-post-js ${CMAKE_SOURCE_DIR}/src/post-js.js"
     "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/resources/@/resources/"
     "SHELL:-sALLOW_MEMORY_GROWTH=1"

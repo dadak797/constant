@@ -1,7 +1,5 @@
 #include "logger_config.h"
-#include "icon/IconsFontAwesome6.h"
-#include "icon/IconsFontAwesome6Brands.h"
-#include "font_icon.h"
+#include "font_manager.h"
 
 
 #ifdef __EMSCRIPTEN__
@@ -101,8 +99,8 @@ GLuint sceneDepthTexture = 0;
 int sceneWidth = 800;
 int sceneHeight = 600;
 
-ImFont* g_fontSolid = nullptr;
-ImFont* g_fontRegular = nullptr;
+// ImFont* g_fontSolid = nullptr;
+// ImFont* g_fontRegular = nullptr;
 
 void InitSceneFramebuffer() {
     if (sceneFramebuffer != 0) {
@@ -321,20 +319,20 @@ void SetupDockSpace() {
     }
 
     if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu(ICON_FA_COPYRIGHT)) {
+        if (ImGui::BeginMenu(ICON_FA6_COPYRIGHT)) {
             ImGui::MenuItem("About Constant", nullptr, false, false);
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("File")) {
-            ImGui::PushFont(g_fontSolid);
+            // ImGui::PushFont(g_fontSolid);
             char buffer[256];
-            snprintf(buffer, sizeof(buffer), "%s  New", ICON_FA_FILE_CIRCLE_PLUS);
+            snprintf(buffer, sizeof(buffer), "%s  New", ICON_FA6_FILE_CIRCLE_PLUS);
             ImGui::MenuItem(buffer, nullptr, false, false);
-            snprintf(buffer, sizeof(buffer), "%s  Load", ICON_FA_FILE_IMPORT);
+            snprintf(buffer, sizeof(buffer), "%s  Load", ICON_FA6_FILE_IMPORT);
             ImGui::MenuItem(buffer, nullptr, false, false);
-            snprintf(buffer, sizeof(buffer), "%s  Save", ICON_FA_FILE_EXPORT);
+            snprintf(buffer, sizeof(buffer), "%s  Save", ICON_FA6_FILE_EXPORT);
             ImGui::MenuItem(buffer, nullptr, false, false);
-            ImGui::PopFont();
+            // ImGui::PopFont();
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Settings")) {
@@ -383,7 +381,7 @@ void SetupDockSpace() {
 
 #ifdef DEBUG_BUILD
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
-    if (showIconWindow) App::DrawFontIcons(&showIconWindow);
+    if (showIconWindow) FontManager::Instance().DrawAllFontIcons(&showIconWindow);
 #endif
 
     ImGui::End();
@@ -449,23 +447,8 @@ int main()
     io.ConfigDockingTransparentPayload = true;
 
     // Setup fonts
-    static const ImWchar icons_fa6_ranges[] = { ICON_MIN_FA, ICON_MAX_16_FA, 0 };
-    static const ImWchar icons_fa6b_ranges[] = { ICON_MIN_FAB, ICON_MAX_16_FAB, 0 };
-    
-    ImFontConfig font_config;
-    font_config.MergeMode = true;  // Merge to previous font
-    font_config.PixelSnapH = true;
-    font_config.GlyphMinAdvanceX = 13.0f;
-
-    // Font 1: NotoSansKR + fa-regular + fa-brands
-    g_fontSolid = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAS, 13.0f, &font_config, icons_fa6_ranges);   // fa-solid
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAB, 13.0f, &font_config, icons_fa6b_ranges);  // fa-brands
-
-    // Font 2: NotoSansKR + fa-regular + fa-brands
-    g_fontRegular = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAR, 13.0f, &font_config, icons_fa6_ranges);   // fa-regular
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAB, 13.0f, &font_config, icons_fa6b_ranges);  // fa-brands
+    // Initialize font manager after ImGui context is created
+    FontManager& fontManager = FontManager::Instance();
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -540,18 +523,6 @@ int main()
         
         RenderScene();
         ShowSceneWindow();
-
-        ImGui::Begin("My Window");
-
-        ImGui::PushFont(g_fontRegular);
-        ImGui::Text("%s Regular Icon", ICON_FA_ADDRESS_BOOK);
-        ImGui::PopFont();
-        
-        ImGui::PushFont(g_fontSolid);
-        ImGui::Text("%s Solid Icon", ICON_FA_ADDRESS_BOOK);
-        ImGui::PopFont();
-        
-        ImGui::End();
 
         ImGui::Render();
         
