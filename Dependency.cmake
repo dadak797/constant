@@ -107,7 +107,7 @@ add_library(imgui
   ${IMGUI_SOURCE_DIR}/imgui.cpp
 )
 target_include_directories(imgui PRIVATE ${DEP_INCLUDE_DIR})
-# add_dependencies(imgui ${DEP_LIST})
+add_dependencies(imgui ${DEP_LIST})  # imgui requires glfw and glad.
 set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} ${IMGUI_SOURCE_DIR})
 set(DEP_LIST ${DEP_LIST} imgui)
 set(DEP_LIBS ${DEP_LIBS} imgui)

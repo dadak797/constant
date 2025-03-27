@@ -1,5 +1,11 @@
 #pragma once
 
+// Standard library
+#include <unordered_map>
+
+// Dependencies
+#include <imgui.h>
+
 #include "icon/FontAwesome6.h"
 #include "icon/FontAwesome6Brands.h"
 #include "icon/FontAwesome5.h"
@@ -47,30 +53,15 @@ public:
     void SetFontIcon(FontIcon fontIcon);
     void SetDefaultFontIcon();
 
-#ifdef DEBUG_BUILD
+// #ifdef DEBUG_BUILD
     void DrawAllFontIcons(bool* openWindow);
-#endif
+// #endif
 
 private:
     // ImFont* variables are managed by ImFontAtlas.
     // Do not delete it in the destructor.
-    ImFont* m_FontAwesome6S { nullptr };  // Solid (Default font)
-    ImFont* m_FontAwesome6R { nullptr };  // Regular
-    ImFont* m_FontAwesome6B { nullptr };  // Brands
-    ImFont* m_FontAwesome5S { nullptr };  // Solid
-    ImFont* m_FontAwesome5R { nullptr };  // Regular
-    ImFont* m_FontAwesome5B { nullptr };  // Brands
-    ImFont* m_FontAwesome4 { nullptr };
-    ImFont* m_CodIcons { nullptr };
-    ImFont* m_FontAudio { nullptr };
-    ImFont* m_ForkAwesome { nullptr };
-    ImFont* m_Kenney { nullptr };
-    ImFont* m_Lucide { nullptr };
-    ImFont* m_MaterialDesign { nullptr };
-    // ImFont* m_MaterialDesignIcons { nullptr };
-    ImFont* m_MaterialSymbolsO { nullptr };  // Outlined
-    // ImFont* m_MaterialSymbolsR { nullptr };  // Rounded
-    // ImFont* m_MaterialSymbolsS { nullptr };  // Sharp
+    std::unordered_map<FontIcon, ImFont*> m_FontIcons;
+    ImFontConfig m_DefaultFontConfig;
 
     FontManager();
     ~FontManager() = default;
@@ -80,10 +71,26 @@ private:
     FontManager& operator=(const FontManager&) = delete;
 
     void init();
-    void loadDefaultFont();
-    void loadAllAdditionalFonts();  // Load all fonts except the default font
 
-#ifdef DEBUG_BUILD    
+    void loadFontAwesome6S();
+    void loadFontAwesome6R();
+    void loadFontAwesome6B();
+    void loadFontAwesome5S();
+    void loadFontAwesome5R();
+    void loadFontAwesome5B();
+    void loadFontAwesome4();
+    void loadCodIcons();
+    void loadFontAudio();
+    void loadForkAwesome();
+    void loadKenney();
+    void loadLucide();
+    void loadMaterialDesign();
+    // void loadMaterialDesignIcons();
+    void loadMaterialSymbolsO();
+    // void loadMaterialSymbolsR();
+    // void loadMaterialSymbolsS();
+
+#ifdef SHOW_FONT_ICONS
     void drawFontAwesome6S(bool* openWindow);
     void drawFontAwesome6R(bool* openWindow);
     void drawFontAwesome6B(bool* openWindow);

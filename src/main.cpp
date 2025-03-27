@@ -272,7 +272,9 @@ void SetupDockSpace() {
     static bool fullDockSpace = true;
 #ifdef DEBUG_BUILD
     static bool showDemoWindow = false;
-    static bool showIconWindow = false;
+#endif
+#ifdef SHOW_FONT_ICONS
+    static bool showFontIcons = true;
 #endif
     static ViewerStyle viewerStyle = ViewerStyle::Dark;
 
@@ -372,7 +374,6 @@ void SetupDockSpace() {
         if (ImGui::BeginMenu("Debugging")) {
             ImGui::MenuItem("Full Dockspace", nullptr, &fullDockSpace);
             ImGui::MenuItem("Show Demo Window", nullptr, &showDemoWindow);
-            ImGui::MenuItem("Show Icons", nullptr, &showIconWindow);
             ImGui::EndMenu();
         }
     #endif
@@ -381,7 +382,9 @@ void SetupDockSpace() {
 
 #ifdef DEBUG_BUILD
     if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
-    if (showIconWindow) FontManager::Instance().DrawAllFontIcons(&showIconWindow);
+#endif
+#ifdef SHOW_FONT_ICONS
+    if (showFontIcons) FontManager::Instance().DrawAllFontIcons(&showFontIcons);
 #endif
 
     ImGui::End();

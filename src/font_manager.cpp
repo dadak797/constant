@@ -1,8 +1,6 @@
 #include "font_manager.h"
 #include "logger_config.h"
 
-#include <imgui.h>
-
 
 FontManager& FontManager::Instance() {
     static FontManager s_Instance;
@@ -14,183 +12,303 @@ FontManager::FontManager() {
 }
 
 void FontManager::init() {
-    loadDefaultFont();
-    loadAllAdditionalFonts();
+    // Set default font config
+    m_DefaultFontConfig.MergeMode = true;  // Merge to previous font
+    m_DefaultFontConfig.PixelSnapH = false;
+    m_DefaultFontConfig.GlyphMinAdvanceX = 12.0f;
+    m_DefaultFontConfig.OversampleH = 3;  // Increase horizontal oversampling
+    m_DefaultFontConfig.OversampleV = 3;  // Increase vertical oversampling
+
+    loadFontAwesome6S();
+    loadFontAwesome6R();
+    loadFontAwesome6B();
+    loadFontAwesome5S();
+    loadFontAwesome5R();
+    loadFontAwesome5B();
+    loadFontAwesome4();
+    loadCodIcons();
+    loadFontAudio();
+    loadForkAwesome();
+    loadKenney();
+    loadLucide();
+    loadMaterialDesign();
+    // loadMaterialDesignIcons();
+    loadMaterialSymbolsO();
+    // loadMaterialSymbolsR();
+    // loadMaterialSymbolsS();
+    
+    SPDLOG_DEBUG("All fonts loaded successfully");
 }
 
-void FontManager::loadDefaultFont() {
+void FontManager::loadFontAwesome6S() {
     ImGuiIO& io = ImGui::GetIO();
-
-    // Basic font config
-    ImFontConfig font_config;
-    font_config.MergeMode = true;  // Merge to previous font
-    font_config.PixelSnapH = false;
-    font_config.GlyphMinAdvanceX = 12.0f;
-    font_config.OversampleH = 3;  // Increase horizontal oversampling
-    font_config.OversampleV = 3;  // Increase vertical oversampling
 
     // Font 1. NotoSansKR-Light + FontAwesome6-Solid (Default font)
     static const ImWchar icons_fa6_ranges[] = { ICON_MIN_FA6, ICON_MAX_16_FA6, 0 };
-    m_FontAwesome6S = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6S, 12.0f, &font_config, icons_fa6_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6S, 12.0f, &m_DefaultFontConfig, icons_fa6_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome6S, pImFont));
+
+    SPDLOG_DEBUG("FontManager::loadFontAwesome6S() - Default font is loaded.");
 }
 
-void FontManager::loadAllAdditionalFonts() {
+void FontManager::loadFontAwesome6R() {
     ImGuiIO& io = ImGui::GetIO();
-
-    // Basic font config
-    ImFontConfig font_config;
-    font_config.MergeMode = true;  // Merge to previous font
-    font_config.PixelSnapH = false;
-    font_config.GlyphMinAdvanceX = 12.0f;
-    font_config.OversampleH = 3;  // Increase horizontal oversampling
-    font_config.OversampleV = 3;  // Increase vertical oversampling
 
     // Font 2. NotoSansKR-Light + FontAwesome6-Regular
     static const ImWchar icons_fa6_ranges[] = { ICON_MIN_FA6, ICON_MAX_16_FA6, 0 };
-    m_FontAwesome6R = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6R, 12.0f, &font_config, icons_fa6_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6R, 12.0f, &m_DefaultFontConfig, icons_fa6_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome6R, pImFont));
+
+    SPDLOG_DEBUG("FontAwesome6-Regular is loaded.");
+}
+
+void FontManager::loadFontAwesome6B() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 3. NotoSansKR-Light + FontAwesome6-Brands
     static const ImWchar icons_fa6b_ranges[] = { ICON_MIN_FA6B, ICON_MAX_16_FA6B, 0 };
-    m_FontAwesome6B = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6B, 12.0f, &font_config, icons_fa6b_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6B, 12.0f, &m_DefaultFontConfig, icons_fa6b_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome6B, pImFont));
+
+    SPDLOG_DEBUG("FontAwesome6-Brands is loaded.");
+}
+
+void FontManager::loadFontAwesome5S() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 4. NotoSansKR-Light + FontAwesome5-Solid
     static const ImWchar icons_fa5_ranges[] = { ICON_MIN_FA5, ICON_MAX_16_FA5, 0 };
-    m_FontAwesome5S = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5S, 12.0f, &font_config, icons_fa5_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5S, 12.0f, &m_DefaultFontConfig, icons_fa5_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome5S, pImFont));
+
+    SPDLOG_DEBUG("FontAwesome5-Solid is loaded.");
+}
+
+void FontManager::loadFontAwesome5R() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 5. NotoSansKR-Light + FontAwesome5-Regular
-    m_FontAwesome5R = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5R, 12.0f, &font_config, icons_fa5_ranges);
+    static const ImWchar icons_fa5_ranges[] = { ICON_MIN_FA5, ICON_MAX_16_FA5, 0 };
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5R, 12.0f, &m_DefaultFontConfig, icons_fa5_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome5R, pImFont));
+
+    SPDLOG_DEBUG("FontAwesome5-Regular is loaded.");
+}
+
+void FontManager::loadFontAwesome5B() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 6. NotoSansKR-Light + FontAwesome5-Brands
     static const ImWchar icons_fa5b_ranges[] = { ICON_MIN_FA5B, ICON_MAX_16_FA5B, 0 };
-    m_FontAwesome5B = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5B, 12.0f, &font_config, icons_fa5b_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5B, 12.0f, &m_DefaultFontConfig, icons_fa5b_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome5B, pImFont));
+
+    SPDLOG_DEBUG("FontAwesome5-Brands is loaded.");
+}
+
+void FontManager::loadFontAwesome4() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 7. NotoSansKR-Light + FontAwesome4
     static const ImWchar icons_fa4_ranges[] = { ICON_MIN_FA4, ICON_MAX_FA4, 0 };
-    m_FontAwesome4 = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA4, 12.0f, &font_config, icons_fa4_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA4, 12.0f, &m_DefaultFontConfig, icons_fa4_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome4, pImFont));
+
+    SPDLOG_DEBUG("FontAwesome4 is loaded.");
+}
+
+void FontManager::loadCodIcons() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 8. NotoSansKR-Light + CodIcons
     static const ImWchar icons_cod_ranges[] = { ICON_MIN_CI, ICON_MAX_16_CI, 0 };
-    ImFontConfig codicons_config = font_config;  // Copy from font_config
-    codicons_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
-    m_CodIcons = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    ImFontConfig codicons_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
+    codicons_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_CI, 12.0f, &codicons_config, icons_cod_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::CodIcons, pImFont));
+
+    SPDLOG_DEBUG("CodIcons is loaded.");
+}
+
+void FontManager::loadFontAudio() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 9. NotoSansKR-Light + FontAudio
     static const ImWchar icons_fontaudio_ranges[] = { ICON_MIN_FAD, ICON_MAX_16_FAD, 0 };
-    ImFontConfig fontaudio_config = font_config;  // Copy from font_config
-    fontaudio_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
-    m_FontAudio = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    ImFontConfig fontaudio_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
+    fontaudio_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAD, 14.0f, &fontaudio_config, icons_fontaudio_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::FontAudio, pImFont));
+
+    SPDLOG_DEBUG("FontAudio is loaded.");
+}
+
+void FontManager::loadForkAwesome() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 10. NotoSansKR-Light + ForkAwesome
     static const ImWchar icons_forkawesome_ranges[] = { ICON_MIN_FK, ICON_MAX_16_FK, 0 };
-    m_ForkAwesome = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FK, 12.0f, &font_config, icons_forkawesome_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FK, 12.0f, &m_DefaultFontConfig, icons_forkawesome_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::ForkAwesome, pImFont));
+
+    SPDLOG_DEBUG("ForkAwesome is loaded.");
+}
+
+void FontManager::loadKenney() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 11. NotoSansKR-Light + Kenney
     static const ImWchar icons_kenney_ranges[] = { ICON_MIN_KI, ICON_MAX_16_KI, 0 };
-    m_Kenney = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_KI, 11.0f, &font_config, icons_kenney_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_KI, 11.0f, &m_DefaultFontConfig, icons_kenney_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::Kenney, pImFont));
+
+    SPDLOG_DEBUG("Kenney is loaded.");
+}
+
+void FontManager::loadLucide() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 12. NotoSansKR-Light + Lucide
     static const ImWchar icons_lucide_ranges[] = { ICON_MIN_LC, ICON_MAX_16_LC, 0 };
-    ImFontConfig lucide_config = font_config;  // Copy from font_config
-    lucide_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
-    m_Lucide = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    ImFontConfig lucide_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
+    lucide_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_LC, 12.0f, &lucide_config, icons_lucide_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::Lucide, pImFont));
+
+    SPDLOG_DEBUG("Lucide is loaded.");
+}
+
+void FontManager::loadMaterialDesign() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 13. NotoSansKR-Light + MaterialDesign
     static const ImWchar icons_materialdesign_ranges[] = { ICON_MIN_MD, ICON_MAX_16_MD, 0 };
-    ImFontConfig materialdesign_config = font_config;  // Copy from font_config
-    materialdesign_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
-    m_MaterialDesign = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    ImFontConfig materialdesign_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
+    materialdesign_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MD, 13.0f, &materialdesign_config, icons_materialdesign_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::MaterialDesign, pImFont));
 
-    // Font 14. NotoSansKR-Light + MaterialDesignIcons (Not working)
-    // static const ImWchar icons_materialdesignicons_ranges[] = { ICON_MIN_MDI, ICON_MAX_16_MDI, 0 };
-    // ImFontConfig materialdesignicons_config = font_config;  // Copy from font_config
-    // materialdesignicons_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
-    // m_MaterialDesignIcons = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    // io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MDI, 12.0f, &materialdesignicons_config, icons_materialdesignicons_ranges);
+    SPDLOG_DEBUG("MaterialDesign is loaded.");
+}
+
+// void FontManager::loadMaterialDesignIcons() {
+//     ImGuiIO& io = ImGui::GetIO();
+//
+//     // Font 14. NotoSansKR-Light + MaterialDesignIcons (Not working)
+//     static const ImWchar icons_materialdesignicons_ranges[] = { ICON_MIN_MDI, ICON_MAX_16_MDI, 0 };
+//     ImFontConfig materialdesignicons_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
+//     materialdesignicons_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
+//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MDI, 12.0f, &materialdesignicons_config, icons_materialdesignicons_ranges);
+//     m_FontIcons.insert(std::make_pair(FontIcon::MaterialDesignIcons, pImFont));
+//
+//     SPDLOG_DEBUG("MaterialDesignIcons is loaded.");
+// }
+
+void FontManager::loadMaterialSymbolsO() {
+    ImGuiIO& io = ImGui::GetIO();
 
     // Font 15. NotoSansKR-Light + MaterialSymbolsOutlined
     static const ImWchar icons_materialsymbols_ranges[] = { ICON_MIN_MS, ICON_MAX_16_MS, 0 };
-    ImFontConfig materialsymbols_config = font_config;  // Copy from font_config
-    materialsymbols_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
-    m_MaterialSymbolsO = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+    ImFontConfig materialsymbols_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
+    materialsymbols_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSO, 15.0f, &materialsymbols_config, icons_materialsymbols_ranges);
+    m_FontIcons.insert(std::make_pair(FontIcon::MaterialSymbolsO, pImFont));
 
-    // Font 16. NotoSansKR-Light + MaterialSymbolsRounded (No difference with MaterialSymbolsOutlined)
-    // m_MaterialSymbolsR = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    // io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSR, 15.0f, &materialsymbols_config, icons_materialsymbols_ranges);
-
-    // Font 17. NotoSansKR-Light + MaterialSymbolsSharp (No difference with MaterialSymbolsOutlined)
-    // m_MaterialSymbolsS = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
-    // io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSS, 15.0f, &materialsymbols_config, icons_materialsymbols_ranges);
+    SPDLOG_DEBUG("MaterialSymbolsOutlined is loaded.");
 }
+
+// void FontManager::loadMaterialSymbolsR() {
+//     ImGuiIO& io = ImGui::GetIO();
+//
+//     // Font 16. NotoSansKR-Light + MaterialSymbolsRounded (No difference with MaterialSymbolsOutlined)
+//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSR, 15.0f, &materialsymbols_config, icons_materialsymbols_ranges);
+//     m_FontIcons.insert(std::make_pair(FontIcon::MaterialSymbolsR, pImFont));
+//
+//     SPDLOG_DEBUG("MaterialSymbolsRounded is loaded.");
+// }
+
+// void FontManager::loadMaterialSymbolsS() {
+//     ImGuiIO& io = ImGui::GetIO();
+//
+//     // Font 17. NotoSansKR-Light + MaterialSymbolsSharp (No difference with MaterialSymbolsOutlined)
+//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f, nullptr, io.Fonts->GetGlyphRangesKorean());
+//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSS, 15.0f, &materialsymbols_config, icons_materialsymbols_ranges);
+//     m_FontIcons.insert(std::make_pair(FontIcon::MaterialSymbolsS, pImFont));
+//
+//     SPDLOG_DEBUG("MaterialSymbolsSharp is loaded.");
+// }
 
 void FontManager::SetFontIcon(FontIcon fontIcon) {
     switch (fontIcon) {
     case FontIcon::FontAwesome6S:
-        ImGui::PushFont(m_FontAwesome6S);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAwesome6S));
         break;
     case FontIcon::FontAwesome6R:
-        ImGui::PushFont(m_FontAwesome6R);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAwesome6R));
         break;
     case FontIcon::FontAwesome6B:
-        ImGui::PushFont(m_FontAwesome6B);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAwesome6B));
         break;
     case FontIcon::FontAwesome5S:
-        ImGui::PushFont(m_FontAwesome5S);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAwesome5S));
         break;
     case FontIcon::FontAwesome5R:
-        ImGui::PushFont(m_FontAwesome5R);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAwesome5R));
         break;
     case FontIcon::FontAwesome5B:
-        ImGui::PushFont(m_FontAwesome5B);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAwesome5B));
         break;
     case FontIcon::FontAwesome4:
-        ImGui::PushFont(m_FontAwesome4);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAwesome4));
         break;
     case FontIcon::CodIcons:
-        ImGui::PushFont(m_CodIcons);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::CodIcons));
         break;
     case FontIcon::FontAudio:
-        ImGui::PushFont(m_FontAudio);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::FontAudio));
         break;
     case FontIcon::ForkAwesome:
-        ImGui::PushFont(m_ForkAwesome);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::ForkAwesome));
         break;
     case FontIcon::Kenney:
-        ImGui::PushFont(m_Kenney);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::Kenney));
         break;
     case FontIcon::Lucide:
-        ImGui::PushFont(m_Lucide);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::Lucide));
         break;
     case FontIcon::MaterialDesign:
-        ImGui::PushFont(m_MaterialDesign);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::MaterialDesign));
         break;
     // case FontIcon::MaterialDesignIcons:
-    //     ImGui::PushFont(m_MaterialDesignIcons);
+    //     ImGui::PushFont(m_FontIcons.at(FontIcon::MaterialDesignIcons));
     //     break;
     case FontIcon::MaterialSymbolsO:
-        ImGui::PushFont(m_MaterialSymbolsO);
+        ImGui::PushFont(m_FontIcons.at(FontIcon::MaterialSymbolsO));
         break;
     // case FontIcon::MaterialSymbolsR:
-    //     ImGui::PushFont(m_MaterialSymbolsR);
+    //     ImGui::PushFont(m_FontIcons.at(FontIcon::MaterialSymbolsR));
     //     break;
     // case FontIcon::MaterialSymbolsS:
-    //     ImGui::PushFont(m_MaterialSymbolsS);
+    //     ImGui::PushFont(m_FontIcons.at(FontIcon::MaterialSymbolsS));
     //     break;
     default:
-        SPDLOG_ERROR("Invalid FontIcon");
+        assert(false);
         break;
     }
 }
@@ -199,7 +317,7 @@ void FontManager::SetDefaultFontIcon() {
     ImGui::PopFont();
 }
 
-#ifdef DEBUG_BUILD
+#ifdef SHOW_FONT_ICONS
 void FontManager::DrawAllFontIcons(bool* openWindow) {
     drawFontAwesome6S(openWindow);  // FontAwesome6-Solid
     drawFontAwesome6R(openWindow);  // FontAwesome6-Regular
@@ -221,7 +339,7 @@ void FontManager::DrawAllFontIcons(bool* openWindow) {
 }
 #endif
 
-#ifdef DEBUG_BUILD    
+#ifdef SHOW_FONT_ICONS  
 void FontManager::drawFontAwesome6S(bool* openWindow) {
     static ImGuiTableFlags flags = ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
 
