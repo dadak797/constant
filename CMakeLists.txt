@@ -136,7 +136,7 @@ target_compile_definitions(${PROJECT_NAME}
     WINDOW_NAME="${WINDOW_NAME}"
     WINDOW_WIDTH=${WINDOW_WIDTH}
     WINDOW_HEIGHT=${WINDOW_HEIGHT}
-    SHOW_FONT_ICONS  # with wasm + debug -> really slow. Comment this line for production build
+    # SHOW_FONT_ICONS  # with wasm + debug -> really slow. Comment this line for production build
 )
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(${PROJECT_NAME}

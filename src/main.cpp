@@ -28,9 +28,9 @@
 
 enum class ViewerStyle
 {
-    Dark,
-    Light,
-    Classic
+    Dark = 0,
+    Light = 1,
+    Classic = 2
 };
 
 #ifdef __EMSCRIPTEN__
@@ -268,6 +268,31 @@ void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos)
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 }
 
+ViewerStyle g_ViewerStyle = ViewerStyle::Dark;
+
+void SetStyle(ViewerStyle style) {
+    g_ViewerStyle = style;
+    switch (style) {
+        case ViewerStyle::Dark:
+            ImGui::StyleColorsDark();
+            break;
+        case ViewerStyle::Light:
+            ImGui::StyleColorsLight();
+            break;
+        case ViewerStyle::Classic:
+            ImGui::StyleColorsClassic();
+            break;
+    }
+
+#ifdef __EMSCRIPTEN__
+    // Save viewer style on local storage
+    EM_ASM({
+        const viewerStyle = $0;
+        localStorage.setItem(`Constant-Style`, viewerStyle);
+    }, static_cast<int>(g_ViewerStyle));
+#endif
+}
+
 void SetupDockSpace() {
     static bool fullDockSpace = true;
 #ifdef DEBUG_BUILD
@@ -276,7 +301,6 @@ void SetupDockSpace() {
 #ifdef SHOW_FONT_ICONS
     static bool showFontIcons = true;
 #endif
-    static ViewerStyle viewerStyle = ViewerStyle::Dark;
 
     static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
 
@@ -340,20 +364,17 @@ void SetupDockSpace() {
         if (ImGui::BeginMenu("Settings")) {
             if (ImGui::BeginMenu("Style"))
             {
-                if (ImGui::MenuItem("Dark", nullptr, viewerStyle == ViewerStyle::Dark))
+                if (ImGui::MenuItem("Dark", nullptr, g_ViewerStyle == ViewerStyle::Dark))
                 {
-                    viewerStyle = ViewerStyle::Dark;
-                    ImGui::StyleColorsDark();
+                    SetStyle(ViewerStyle::Dark);
                 }
-                if (ImGui::MenuItem("Light", nullptr, viewerStyle == ViewerStyle::Light))
+                if (ImGui::MenuItem("Light", nullptr, g_ViewerStyle == ViewerStyle::Light))
                 {
-                    viewerStyle = ViewerStyle::Light;
-                    ImGui::StyleColorsLight();
+                    SetStyle(ViewerStyle::Light);
                 }
-                if (ImGui::MenuItem("Classic", nullptr, viewerStyle == ViewerStyle::Classic))
+                if (ImGui::MenuItem("Classic", nullptr, g_ViewerStyle == ViewerStyle::Classic))
                 {
-                    viewerStyle = ViewerStyle::Classic;
-                    ImGui::StyleColorsClassic();
+                    SetStyle(ViewerStyle::Classic);
                 }
                 ImGui::EndMenu();
             }
@@ -454,7 +475,21 @@ int main()
     FontManager& fontManager = FontManager::Instance();
 
     // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
+#ifdef __EMSCRIPTEN__
+    int viewerStyle = EM_ASM_INT({
+        const style = localStorage.getItem(`Constant-Style`);
+        if (style) {
+            return style;
+        }
+        else {
+            return 0;  // 0 is dark style.
+        }
+    });
+    ViewerStyle initViewerStyle = static_cast<ViewerStyle>(viewerStyle);
+    SetStyle(initViewerStyle);
+#else
+    SetStyle(ViewerStyle::Dark);
+#endif
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle& style = ImGui::GetStyle();
