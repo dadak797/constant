@@ -1,5 +1,7 @@
-#include "logger_config.h"
+#include "config/log_config.h"
+#include "app.h"
 #include "font_manager.h"
+#include "file_loader.h"
 
 
 #ifdef __EMSCRIPTEN__
@@ -26,179 +28,8 @@
     #define EMSCRIPTEN_MAINLOOP_END
 #endif
 
-enum class ViewerStyle
-{
-    Dark = 0,
-    Light = 1,
-    Classic = 2
-};
 
-#ifdef __EMSCRIPTEN__
-    #include <emscripten/bind.h>
-    #include <fstream>
-
-    const char* IDBFS_MOUNT_PATH = "/settings";
-    const char* IMGUI_SETTING_FILE_PATH = "/settings/imgui.ini";
-
-    void InitIdbfs()
-    {
-        // IDBFS mount
-        EM_ASM({
-            const path = UTF8ToString($0);
-            Constant.FS.mkdir(path);
-            Constant.FS.mount(IDBFS, {}, path); 
-            console.log(`IDBFS mounted on "${path}"`);
-        }, IDBFS_MOUNT_PATH);
-    }
-
-    void SaveImGuiIniFile()
-    {
-        std::string settingFilePath(IMGUI_SETTING_FILE_PATH);
-
-        std::ofstream outfile;
-        outfile.open(settingFilePath, std::ios::out);
-
-        // Get ImGui setting data
-        size_t dataSize = 0;
-        const char* data = ImGui::SaveIniSettingsToMemory(&dataSize);
-
-        outfile.write(data, dataSize);
-        outfile.close();
-    }
-
-    void LoadImGuiIniFile()
-    {
-        std::string settingFilePath(IMGUI_SETTING_FILE_PATH);
-
-        std::ifstream fin(settingFilePath, std::ifstream::in);
-        if (!fin) {
-            SPDLOG_DEBUG("Failed to find ImGui setting file!");
-            return;
-        }
-
-        std::ostringstream ss;
-        ss << fin.rdbuf();
-        fin.close();
-        std::string fileContents = ss.str();
-
-        ImGui::LoadIniSettingsFromMemory(fileContents.c_str(), fileContents.size());
-    }
-
-    // Module exports
-    EMSCRIPTEN_BINDINGS(Viewer) {
-        emscripten::function("initIdbfs", &InitIdbfs);
-        emscripten::function("saveImGuiIniFile", &SaveImGuiIniFile);
-        emscripten::function("loadImGuiIniFile", &LoadImGuiIniFile);
-    }
-#endif
-
-// Scene parameters
-GLuint sceneFramebuffer = 0;
-GLuint sceneColorTexture = 0;
-GLuint sceneDepthTexture = 0;
-int sceneWidth = 800;
-int sceneHeight = 600;
-
-// ImFont* g_fontSolid = nullptr;
-// ImFont* g_fontRegular = nullptr;
-
-void InitSceneFramebuffer() {
-    if (sceneFramebuffer != 0) {
-        glDeleteFramebuffers(1, &sceneFramebuffer);
-        glDeleteTextures(1, &sceneColorTexture);
-        glDeleteTextures(1, &sceneDepthTexture);
-    }
-
-    // Create framebuffer
-    glGenFramebuffers(1, &sceneFramebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, sceneFramebuffer);
-
-    // Create color texture
-    glGenTextures(1, &sceneColorTexture);
-    glBindTexture(GL_TEXTURE_2D, sceneColorTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, sceneWidth, sceneHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColorTexture, 0);
-
-    // Create depth texture
-    glGenTextures(1, &sceneDepthTexture);
-    glBindTexture(GL_TEXTURE_2D, sceneDepthTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, sceneWidth, sceneHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, sceneDepthTexture, 0);
-
-    // Check framebuffer status
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        SPDLOG_ERROR("Scene framebuffer is not complete!");
-    }
-
-    // Bind to default buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    SPDLOG_DEBUG("Scene framebuffer initialized: ({} x {})", sceneWidth, sceneHeight);
-}
-
-void ResizeSceneFramebuffer(int width, int height) {
-    if (width <= 0 || height <= 0)
-        return;
-
-    sceneWidth = width;
-    sceneHeight = height;
-    
-    InitSceneFramebuffer();
-}
-
-void RenderScene() {
-    // Bind scene framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, sceneFramebuffer);
-    glViewport(0, 0, sceneWidth, sceneHeight);
-
-    // Render background
-    glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    // Bind to default framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void CleanupSceneFramebuffer() {
-    if (sceneFramebuffer != 0) {
-        glDeleteFramebuffers(1, &sceneFramebuffer);
-        glDeleteTextures(1, &sceneColorTexture);
-        glDeleteTextures(1, &sceneDepthTexture);
-        sceneFramebuffer = 0;
-        sceneColorTexture = 0;
-        sceneDepthTexture = 0;
-    }
-}
-
-void ShowSceneWindow() {
-    // Remove padding
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-    ImGui::Begin("Scene");
-    
-    // Resize framebuffer
-    ImVec2 contentSize = ImGui::GetContentRegionAvail();
-    if (contentSize.x > 0 && contentSize.y > 0 && 
-        (sceneWidth != (int)contentSize.x || sceneHeight != (int)contentSize.y)) {
-        ResizeSceneFramebuffer((int)contentSize.x, (int)contentSize.y);
-    }
-    
-    // Draw scene to framebuffer
-    ImGui::Image((ImTextureID)(intptr_t)sceneColorTexture, 
-                 ImVec2(sceneWidth, sceneHeight), 
-                 ImVec2(0, 1), ImVec2(1, 0));  // Upside down of the texture y-coordinate
-    
-    ImGui::End();
-
-    ImGui::PopStyleVar();
-}
-
-void OnGlfwError(int errorCode, const char* description)
-{
+void OnGlfwError(int errorCode, const char* description) {
     SPDLOG_ERROR("GLFW error (code {}}): {}", errorCode, description);
     
     switch (errorCode)
@@ -268,154 +99,11 @@ void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos)
     ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 }
 
-ViewerStyle g_ViewerStyle = ViewerStyle::Dark;
-
-void SetStyle(ViewerStyle style) {
-    g_ViewerStyle = style;
-    switch (style) {
-        case ViewerStyle::Dark:
-            ImGui::StyleColorsDark();
-            break;
-        case ViewerStyle::Light:
-            ImGui::StyleColorsLight();
-            break;
-        case ViewerStyle::Classic:
-            ImGui::StyleColorsClassic();
-            break;
-    }
-
-#ifdef __EMSCRIPTEN__
-    // Save viewer style on local storage
-    EM_ASM({
-        const viewerStyle = $0;
-        localStorage.setItem(`Constant-Style`, viewerStyle);
-    }, static_cast<int>(g_ViewerStyle));
-#endif
-}
-
-void SetupDockSpace() {
-    static bool fullDockSpace = true;
-#ifdef DEBUG_BUILD
-    static bool showDemoWindow = false;
-#endif
-#ifdef SHOW_FONT_ICONS
-    static bool showFontIcons = true;
-#endif
-
-    static ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_None;
-
-    // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
-    // because it would be confusing to have two docking targets within each others.
-    ImGuiWindowFlags windowFlags = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
-    if (fullDockSpace) {
-        const ImGuiViewport* viewport = ImGui::GetMainViewport();
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(viewport->WorkSize);
-        ImGui::SetNextWindowViewport(viewport->ID);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-        windowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
-        windowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-    } else {
-        dockspaceFlags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
-    }
-
-    // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
-    // and handle the pass-thru hole, so we ask Begin() to not render a background.
-    if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
-        windowFlags |= ImGuiWindowFlags_NoBackground;
-
-    // Important: note that we proceed even if Begin() returns false (aka window is collapsed).
-    // This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
-    // all active windows docked into it will lose their parent and become undocked.
-    // We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
-    // any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-    ImGui::Begin("DockSpace", nullptr, windowFlags);
-    ImGui::PopStyleVar();
-
-    if (fullDockSpace)
-        ImGui::PopStyleVar(2);
-
-    // Submit the DockSpace
-    ImGuiIO& io = ImGui::GetIO();
-    if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable) {
-        ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-        ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags);
-    }
-
-    if (ImGui::BeginMenuBar()) {
-        if (ImGui::BeginMenu(ICON_FA6_COPYRIGHT)) {
-            ImGui::MenuItem("About Constant", nullptr, false, false);
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("File")) {
-            // ImGui::PushFont(g_fontSolid);
-            char buffer[256];
-            snprintf(buffer, sizeof(buffer), "%s  New", ICON_FA6_FILE_CIRCLE_PLUS);
-            ImGui::MenuItem(buffer, nullptr, false, false);
-            snprintf(buffer, sizeof(buffer), "%s  Load", ICON_FA6_FILE_IMPORT);
-            ImGui::MenuItem(buffer, nullptr, false, false);
-            snprintf(buffer, sizeof(buffer), "%s  Save", ICON_FA6_FILE_EXPORT);
-            ImGui::MenuItem(buffer, nullptr, false, false);
-            // ImGui::PopFont();
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Settings")) {
-            if (ImGui::BeginMenu("Style"))
-            {
-                if (ImGui::MenuItem("Dark", nullptr, g_ViewerStyle == ViewerStyle::Dark))
-                {
-                    SetStyle(ViewerStyle::Dark);
-                }
-                if (ImGui::MenuItem("Light", nullptr, g_ViewerStyle == ViewerStyle::Light))
-                {
-                    SetStyle(ViewerStyle::Light);
-                }
-                if (ImGui::MenuItem("Classic", nullptr, g_ViewerStyle == ViewerStyle::Classic))
-                {
-                    SetStyle(ViewerStyle::Classic);
-                }
-                ImGui::EndMenu();
-            }
-            
-        #ifdef __EMSCRIPTEN__
-            ImGui::Separator();
-
-            if (ImGui::MenuItem("Full Screen")) {
-                EM_ASM({
-                    const canvas = document.getElementById("canvas");
-                    canvas.requestFullscreen();
-                });
-            }
-        #endif
-            ImGui::EndMenu();
-        }
-    #ifdef DEBUG_BUILD
-        if (ImGui::BeginMenu("Debugging")) {
-            ImGui::MenuItem("Full Dockspace", nullptr, &fullDockSpace);
-            ImGui::MenuItem("Show Demo Window", nullptr, &showDemoWindow);
-            ImGui::EndMenu();
-        }
-    #endif
-        ImGui::EndMenuBar();
-    }
-
-#ifdef DEBUG_BUILD
-    if (showDemoWindow) ImGui::ShowDemoWindow(&showDemoWindow);
-#endif
-#ifdef SHOW_FONT_ICONS
-    if (showFontIcons) FontManager::Instance().DrawAllFontIcons(&showFontIcons);
-#endif
-
-    ImGui::End();
-}
-
-int main()
-{
-    App::InitLogger();
-
+int main() {
     SPDLOG_DEBUG("Start program");
+
+    // Initialize application
+    App& app = App::Instance();
 
     // Initialize glfw
     SPDLOG_DEBUG("Initialize glfw");
@@ -474,22 +162,9 @@ int main()
     // Initialize font manager after ImGui context is created
     FontManager& fontManager = FontManager::Instance();
 
-    // Setup Dear ImGui style
-#ifdef __EMSCRIPTEN__
-    int viewerStyle = EM_ASM_INT({
-        const style = localStorage.getItem(`Constant-Style`);
-        if (style) {
-            return style;
-        }
-        else {
-            return 0;  // 0 is dark style.
-        }
-    });
-    ViewerStyle initViewerStyle = static_cast<ViewerStyle>(viewerStyle);
-    SetStyle(initViewerStyle);
-#else
-    SetStyle(ViewerStyle::Dark);
-#endif
+    // Setup Initial ImGui style
+    // Initialize ImGui style after ImGui context is created.
+    app.SetInitStyle();
 
     // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
     ImGuiStyle& style = ImGui::GetStyle();
@@ -524,7 +199,9 @@ int main()
 #endif
     ImGui_ImplOpenGL3_Init(glsl_version);
 
-    InitSceneFramebuffer();
+    // Initialize ImGui-based windows
+    // They should be initialized after ImGui context is created.
+    app.InitImGuiWindows();
 
     // For the first window, run this callback once
     OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -557,10 +234,8 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        SetupDockSpace();
-        
-        RenderScene();
-        ShowSceneWindow();
+        // Render all ImGui-based windows
+        app.Render();
 
         ImGui::Render();
         
@@ -588,8 +263,6 @@ int main()
     EMSCRIPTEN_MAINLOOP_END;
 #endif
 
-    CleanupSceneFramebuffer();
-
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -597,8 +270,6 @@ int main()
 
     glfwDestroyWindow(window);
     glfwTerminate();
-
-    App::ShutdownLogger();
 
     return 0;
 }

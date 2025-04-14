@@ -22,8 +22,11 @@ project(${PROJECT_NAME})
 # Add source files
 add_executable(${PROJECT_NAME}
   src/main.cpp
-  src/logger_config.cpp    src/logger_config.h
   src/font_manager.cpp     src/font_manager.h
+  src/file_loader.cpp      src/file_loader.h
+  src/bind_function.cpp
+  src/app.cpp              src/app.h
+  src/scene_window.cpp     src/scene_window.h
 )
 
 if (MSVC)
@@ -59,7 +62,7 @@ if (EMSCRIPTEN)
 
   list(APPEND EMSCRIPTEN_LINK_OPTIONS
     "SHELL:--bind"
-    "SHELL:-lidbfs.js"  # IndexedDB File System
+    "SHELL:-lidbfs.js"  # IndexedDB file system
     "SHELL:-sEXPORTED_RUNTIME_METHODS=['FS']"
     "SHELL:-sWASM=1"
     "SHELL:-sENVIRONMENT=web,worker"
@@ -136,7 +139,8 @@ target_compile_definitions(${PROJECT_NAME}
     WINDOW_NAME="${WINDOW_NAME}"
     WINDOW_WIDTH=${WINDOW_WIDTH}
     WINDOW_HEIGHT=${WINDOW_HEIGHT}
-    # SHOW_FONT_ICONS  # with wasm + debug -> really slow. Comment this line for production build
+    SHOW_IMGUI_DEMO  # Show ImGui demo window. Comment this for production build
+    SHOW_FONT_ICONS  # with wasm + debug -> really slow. Comment this line for production build
 )
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_definitions(${PROJECT_NAME}

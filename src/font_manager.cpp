@@ -1,14 +1,15 @@
 #include "font_manager.h"
-#include "logger_config.h"
+#include "config/log_config.h"
 
-
-FontManager& FontManager::Instance() {
-    static FontManager s_Instance;
-    return s_Instance;
-}
 
 FontManager::FontManager() {
     init();
+}
+
+FontManager::~FontManager() {
+    // ImFont* variables are managed by ImFontAtlas.
+    // Do not need to delete them in the destructor.
+    m_FontIcons.clear();
 }
 
 void FontManager::init() {
@@ -20,20 +21,20 @@ void FontManager::init() {
     m_DefaultFontConfig.OversampleV = 3;  // Increase vertical oversampling
 
     loadFontAwesome6S();
-    loadFontAwesome6R();
-    loadFontAwesome6B();
-    loadFontAwesome5S();
-    loadFontAwesome5R();
-    loadFontAwesome5B();
-    loadFontAwesome4();
-    loadCodIcons();
-    loadFontAudio();
-    loadForkAwesome();
-    loadKenney();
-    loadLucide();
-    loadMaterialDesign();
+    // loadFontAwesome6R();
+    // loadFontAwesome6B();
+    // loadFontAwesome5S();
+    // loadFontAwesome5R();
+    // loadFontAwesome5B();
+    // loadFontAwesome4();
+    // loadCodIcons();
+    // loadFontAudio();
+    // loadForkAwesome();
+    // loadKenney();
+    // loadLucide();
+    // loadMaterialDesign();
     // loadMaterialDesignIcons();
-    loadMaterialSymbolsO();
+    // loadMaterialSymbolsO();
     // loadMaterialSymbolsR();
     // loadMaterialSymbolsS();
     
@@ -318,22 +319,22 @@ void FontManager::SetDefaultFontIcon() {
 }
 
 #ifdef SHOW_FONT_ICONS
-void FontManager::DrawAllFontIcons(bool* openWindow) {
+void FontManager::Render(bool* openWindow) {
     drawFontAwesome6S(openWindow);  // FontAwesome6-Solid
-    drawFontAwesome6R(openWindow);  // FontAwesome6-Regular
-    drawFontAwesome6B(openWindow);  // FontAwesome6-Brands
-    drawFontAwesome5S(openWindow);  // FontAwesome5-Solid
-    drawFontAwesome5R(openWindow);  // FontAwesome5-Regular
-    drawFontAwesome5B(openWindow);  // FontAwesome5-Brands
-    drawFontAwesome4(openWindow);   // FontAwesome4
-    drawCodIcons(openWindow);       // CodIcons
-    drawFontAudio(openWindow);      // FontAudio
-    drawForkAwesome(openWindow);    // ForkAwesome
-    drawKenney(openWindow);         // Kenney
-    drawLucide(openWindow);         // Lucide
-    drawMaterialDesign(openWindow); // MaterialDesign
+    // drawFontAwesome6R(openWindow);  // FontAwesome6-Regular
+    // drawFontAwesome6B(openWindow);  // FontAwesome6-Brands
+    // drawFontAwesome5S(openWindow);  // FontAwesome5-Solid
+    // drawFontAwesome5R(openWindow);  // FontAwesome5-Regular
+    // drawFontAwesome5B(openWindow);  // FontAwesome5-Brands
+    // drawFontAwesome4(openWindow);   // FontAwesome4
+    // drawCodIcons(openWindow);       // CodIcons
+    // drawFontAudio(openWindow);      // FontAudio
+    // drawForkAwesome(openWindow);    // ForkAwesome
+    // drawKenney(openWindow);         // Kenney
+    // drawLucide(openWindow);         // Lucide
+    // drawMaterialDesign(openWindow); // MaterialDesign
     // drawMaterialDesignIcons(openWindow);  // MaterialDesignIcons
-    drawMaterialSymbolsO(openWindow);     // MaterialSymbolsOutlined
+    // drawMaterialSymbolsO(openWindow);     // MaterialSymbolsOutlined
     // drawMaterialSymbolsR(openWindow);     // MaterialSymbolsRounded
     // drawmaterialSymbolsS(openWindow);     // MaterialSymbolsSharp
 }

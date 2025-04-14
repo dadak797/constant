@@ -1,11 +1,8 @@
 #pragma once
 
-// Standard library
-#include <unordered_map>
+#include "macro/singleton_macro.h"
 
-// Dependencies
-#include <imgui.h>
-
+// Font icons
 #include "icon/FontAwesome6.h"
 #include "icon/FontAwesome6Brands.h"
 #include "icon/FontAwesome5.h"
@@ -20,12 +17,17 @@
 #include "icon/MaterialDesignIcons.h"
 #include "icon/MaterialSymbols.h"
 
+// Standard library
+#include <unordered_map>
+
+// Dependencies
+#include <imgui.h>
+
 // Forward declarations
 class ImFont;
 
 
-enum class FontIcon
-{
+enum class FontIcon {
     FontAwesome6S,  // Solid
     FontAwesome6R,  // Regular
     FontAwesome6B,  // Brands
@@ -45,30 +47,20 @@ enum class FontIcon
     // MaterialSymbolsS   // Sharp - No difference with MaterialSymbolsO
 };
 
-class FontManager
-{
-public:
-    static FontManager& Instance();
+class FontManager {
+    DECLARE_SINGLETON(FontManager)
 
+public:    
     void SetFontIcon(FontIcon fontIcon);
     void SetDefaultFontIcon();
 
-// #ifdef DEBUG_BUILD
-    void DrawAllFontIcons(bool* openWindow);
-// #endif
+#ifdef SHOW_FONT_ICONS
+    void Render(bool* openWindow = nullptr);
+#endif
 
 private:
-    // ImFont* variables are managed by ImFontAtlas.
-    // Do not delete it in the destructor.
     std::unordered_map<FontIcon, ImFont*> m_FontIcons;
     ImFontConfig m_DefaultFontConfig;
-
-    FontManager();
-    ~FontManager() = default;
-
-    // Delete copy/move constructor/assignment operations
-    FontManager(const FontManager&) = delete;
-    FontManager& operator=(const FontManager&) = delete;
 
     void init();
 

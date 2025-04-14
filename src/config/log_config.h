@@ -2,9 +2,9 @@
 
 // SPDLOG_ACTIVE_LEVEL should be defined before first including <spdlog.h>
 #ifdef DEBUG_BUILD
-  #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 #else
-  #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
+#define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_INFO
 #endif
 #include <spdlog/spdlog.h>
 
@@ -23,12 +23,3 @@
 // For release build (Format: [timestamp] [level] message)
 // - SPDLOG_INFO, SPDLOG_WARN, SPDLOG_ERROR and SPDLOG_CRITICAL can be used.
 // - SPDLOG_DEBUG and SPDLOG_TRACE are not used in release build.
-
-namespace App {
-    // useConsole: true - log to console, false - log to file
-    // newFile: true - create new log file, false - append to the previous log file
-    // If useConsole is true, newFile is ignored.
-    void InitLogger(bool useConsole = true, bool newFile = true);
-
-    void ShutdownLogger();
-}
