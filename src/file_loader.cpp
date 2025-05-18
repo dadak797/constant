@@ -9,6 +9,10 @@
     #include <emscripten/emscripten.h>
 #endif
 
+#ifdef __APPLE__
+    #include "mac_helper.h"
+#endif
+
 
 FileLoader::FileLoader() {
 }
@@ -44,7 +48,11 @@ void FileLoader::OpenFileBrowser() {
         };
         fileInput.click();
     });
-#else
+#elif defined(__APPLE__)
+    std::vector<std::string> filePaths = MacHelper::OpenFileDialog();
+    for (const auto& filePath: filePaths) {
+        LoadArrayBuffer(filePath, false);
+    }
 #endif
 }
 

@@ -168,5 +168,6 @@ if (APPLE)
     "-framework CoreFoundation"
     "-framework CoreVideo"
     "-framework OpenGL"
+    "-framework UniformTypeIdentifiers"
   )
 endif()
