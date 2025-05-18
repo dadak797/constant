@@ -1,6 +1,6 @@
 #import "mac_helper.h"
 
-// Cocoa framework
+// MacOS api headers
 #import <Cocoa/Cocoa.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 

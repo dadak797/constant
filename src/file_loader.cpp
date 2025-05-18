@@ -13,6 +13,10 @@
     #include "mac_helper.h"
 #endif
 
+#ifdef _WIN32
+    #include "win_helper.h"
+#endif
+
 
 FileLoader::FileLoader() {
 }
@@ -50,6 +54,11 @@ void FileLoader::OpenFileBrowser() {
     });
 #elif defined(__APPLE__)
     std::vector<std::string> filePaths = MacHelper::OpenFileDialog();
+    for (const auto& filePath: filePaths) {
+        LoadArrayBuffer(filePath, false);
+    }
+#elif defined(_WIN32)
+    std::vector<std::string> filePaths = WinHelper::OpenFileDialog();
     for (const auto& filePath: filePaths) {
         LoadArrayBuffer(filePath, false);
     }

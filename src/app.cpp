@@ -19,6 +19,11 @@
     #include "mac_helper.h"
 #endif
 
+// Windows
+#ifdef _WIN32
+    #include "win_helper.h"
+#endif
+
 // Third-party libraries
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -279,8 +284,12 @@ double App::DevicePixelRatio() {
 #elif defined(__APPLE__)
     // For macOS, we can use the MacHelper::DevicePixelRatio() function.
     return MacHelper::DevicePixelRatio();
+#elif defined(_WIN32)
+    // For Windows, we can use the WinHelper::DevicePixelRatio() function.
+    return WinHelper::DevicePixelRatio();
 #endif
-    // TODO: Define this function for other platforms if needed.
+    // TODO: Define DevicePixelRatio() function for Linux if needed.
+    return 1.0;
 }
 
 float App::TextBaseWidth() {

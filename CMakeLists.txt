@@ -30,10 +30,12 @@ add_executable(${PROJECT_NAME}
 )
 
 if(APPLE)
-  target_sources(${PROJECT_NAME}
-    PRIVATE
-      src/mac_helper.mm    src/mac_helper.h
+  target_sources(${PROJECT_NAME} PRIVATE
+    src/mac_helper.mm      src/mac_helper.h
   )
+elseif(WIN32)
+  target_sources(${PROJECT_NAME} PRIVATE
+    src/win_helper.cpp     src/win_helper.h)
 endif()
 
 if (MSVC)
