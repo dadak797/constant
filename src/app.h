@@ -34,6 +34,12 @@ public:
     void InitImGuiWindows();
     void Render();
 
+    static double DevicePixelRatio();
+    static float TextBaseWidth();
+    static float TextBaseHeight();
+    static float TextBaseHeightWithSpacing();
+    static float TitleBarHeight();
+
 private:
     const char* IDBFS_MOUNT_PATH = "/settings";
     const char* IMGUI_SETTING_FILE_PATH = "/settings/imgui.ini";

@@ -181,9 +181,11 @@ int main() {
     }
 
 #ifdef __EMSCRIPTEN__
-    const float dpRatio = emscripten_get_device_pixel_ratio();
-    io.FontGlobalScale = dpRatio;
-    style.ScaleAllSizes(dpRatio);
+    // const float dpRatio = emscripten_get_device_pixel_ratio();
+    // io.FontGlobalScale = dpRatio;
+    style.ScaleAllSizes(App::DevicePixelRatio());
+#else
+    io.FontGlobalScale = 1.0f / App::DevicePixelRatio();
 #endif
 
 #ifdef __EMSCRIPTEN__

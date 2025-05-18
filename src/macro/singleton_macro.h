@@ -8,7 +8,6 @@ public:                                              \
         static ClassName s_Instance;                 \
         return s_Instance;                           \
     }                                                \
-                                                     \
 private:                                             \
     ClassName();                                     \
     ~ClassName();                                    \

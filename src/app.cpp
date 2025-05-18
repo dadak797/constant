@@ -14,6 +14,11 @@
     #include <emscripten/emscripten.h>
 #endif
 
+// MacOS
+#ifdef __APPLE__
+    #include "mac_helper.h"
+#endif
+
 // Third-party libraries
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -265,4 +270,31 @@ void App::renderImGuiWindows() {
     if (m_bShowFontIcons) FontManager::Instance().Render();
 #endif
     if (m_bShowBgColorPopup) SceneWindow::Instance().RenderBgColorPopup(&m_bShowBgColorPopup);
+}
+
+
+double App::DevicePixelRatio() {
+#ifdef __EMSCRIPTEN__
+    return emscripten_get_device_pixel_ratio();
+#elif defined(__APPLE__)
+    // For macOS, we can use the MacHelper::DevicePixelRatio() function.
+    return MacHelper::DevicePixelRatio();
+#endif
+    // TODO: Define this function for other platforms if needed.
+}
+
+float App::TextBaseWidth() {
+    return ImGui::CalcTextSize("A").x;
+}
+
+float App::TextBaseHeight() {
+    return ImGui::GetTextLineHeight();
+}
+
+float App::TextBaseHeightWithSpacing() {
+    return ImGui::GetTextLineHeightWithSpacing();
+}
+
+float App::TitleBarHeight() {
+    return ImGui::GetFrameHeight();
 }

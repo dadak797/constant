@@ -29,6 +29,13 @@ add_executable(${PROJECT_NAME}
   src/scene_window.cpp     src/scene_window.h
 )
 
+if(APPLE)
+  target_sources(${PROJECT_NAME}
+    PRIVATE
+      src/mac_helper.mm    src/mac_helper.h
+  )
+endif()
+
 if (MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
 endif()
