@@ -28,6 +28,7 @@ add_executable(${PROJECT_NAME}
   src/app.cpp              src/app.h
   src/scene_window.cpp     src/scene_window.h
   src/buffer.cpp           src/buffer.h
+  src/vertex_layout.cpp    src/vertex_layout.h
 )
 
 if(APPLE)

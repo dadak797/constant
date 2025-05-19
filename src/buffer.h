@@ -4,7 +4,6 @@
 
 // Standard library
 #include <memory>
-#include <cstdint>
 
 
 DECLARE_PTR(Buffer)
@@ -13,7 +12,6 @@ public:
     static BufferUPtr New(uint32_t bufferType, uint32_t usage, 
         const void* data, size_t stride, size_t count);
 
-    // Destructor
     ~Buffer();
 
     uint32_t Get() const { return m_Buffer; }
@@ -22,8 +20,7 @@ public:
     void Bind() const;
 
 private:
-    // Constructor
-    Buffer() {}
+    Buffer() = default;
 
     bool init(uint32_t bufferType, uint32_t usage, const void* data, size_t stride, size_t count);
 

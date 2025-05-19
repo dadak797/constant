@@ -1,13 +1,5 @@
 #include "buffer.h"
-
-// GLFW
-#ifdef __EMSCRIPTEN__
-    #define GLFW_INCLUDE_ES3    // Include OpenGL ES 3.0 headers
-    #define GLFW_INCLUDE_GLEXT  // Include to OpenGL ES extension headers
-#else  
-    #include <glad/glad.h>
-#endif
-#include <GLFW/glfw3.h>
+#include "config/gl_config.h"
 
 
 BufferUPtr Buffer::New(uint32_t bufferType, uint32_t usage,
@@ -21,7 +13,9 @@ BufferUPtr Buffer::New(uint32_t bufferType, uint32_t usage,
 }
 
 Buffer::~Buffer() {
-    if (m_Buffer) glDeleteBuffers(1, &m_Buffer);
+    if (m_Buffer) { 
+        glDeleteBuffers(1, &m_Buffer);
+    }
 }
 
 void Buffer::Bind() const {
