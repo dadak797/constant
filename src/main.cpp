@@ -29,7 +29,7 @@
 #endif
 
 
-void OnGlfwError(int errorCode, const char* description) {
+void OnGlfwError(int32_t errorCode, const char* description) {
     SPDLOG_ERROR("GLFW error (code {}}): {}", errorCode, description);
     
     switch (errorCode)
@@ -64,12 +64,12 @@ void OnGlfwError(int errorCode, const char* description) {
     }
 }
 
-void OnFramebufferSizeChange(GLFWwindow* window, int width, int height) {
+void OnFramebufferSizeChange(GLFWwindow* window, int32_t width, int32_t height) {
     SPDLOG_DEBUG("framebuffer size changed: ({} x {})", width, height);
     glViewport(0, 0, width, height);
 }
 
-void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods) {
+void OnKeyEvent(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods) {
     ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
     SPDLOG_DEBUG("key: {}, scancode: {}, action: {}, mods: {}{}{}",
         key, scancode,
@@ -81,7 +81,7 @@ void OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mods)
         mods & GLFW_MOD_ALT ? "A" : "-");
 }
 
-void OnCharEvent(GLFWwindow* window, unsigned int ch) {
+void OnCharEvent(GLFWwindow* window, uint32_t ch) {
     ImGui_ImplGlfw_CharCallback(window, ch);
 }
 
@@ -89,7 +89,7 @@ void OnScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 }
 
-void OnMouseButtonEvent(GLFWwindow* window, int button, int action, int mods)
+void OnMouseButtonEvent(GLFWwindow* window, int32_t button, int32_t action, int32_t mods)
 {
     ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 }
@@ -120,7 +120,7 @@ int main() {
 #endif
 
     SPDLOG_DEBUG("Create glfw window");
-    int width, height;
+    int32_t width, height;
 #ifdef __EMSCRIPTEN__ 
     // For wasm, width and height can be obtained from canvas.
     emscripten_get_canvas_element_size("canvas", &width, &height);

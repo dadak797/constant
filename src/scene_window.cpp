@@ -129,11 +129,11 @@ void SceneWindow::processEvents() {
 
     io.ConfigWindowsMoveFromTitleBarOnly = true;
 
-    int xpos = static_cast<int>(io.MousePos.x - windowPos.x - viewportPos.x);
-    int ypos = static_cast<int>(io.MousePos.y - windowPos.y - viewportPos.y);
+    int32_t xpos = static_cast<int32_t>(io.MousePos.x - windowPos.x - viewportPos.x);
+    int32_t ypos = static_cast<int32_t>(io.MousePos.y - windowPos.y - viewportPos.y);
 
-    int ctrl = static_cast<int>(io.KeyCtrl);
-    int shift = static_cast<int>(io.KeyShift);
+    int32_t ctrl = static_cast<int32_t>(io.KeyCtrl);
+    int32_t shift = static_cast<int32_t>(io.KeyShift);
     bool dclick = io.MouseDoubleClicked[0] || io.MouseDoubleClicked[1] || io.MouseDoubleClicked[2];
 
     if (ImGui::IsWindowHovered()) {
