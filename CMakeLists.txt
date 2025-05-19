@@ -27,6 +27,7 @@ add_executable(${PROJECT_NAME}
   src/bind_function.cpp
   src/app.cpp              src/app.h
   src/scene_window.cpp     src/scene_window.h
+  src/buffer.cpp           src/buffer.h
 )
 
 if(APPLE)
