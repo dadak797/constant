@@ -16,12 +16,12 @@
 
 // MacOS
 #ifdef __APPLE__
-    #include "mac_helper.h"
+    #include "platform/mac_helper.h"
 #endif
 
 // Windows
 #ifdef _WIN32
-    #include "win_helper.h"
+    #include "platform/win_helper.h"
 #endif
 
 // Third-party libraries

@@ -6,7 +6,7 @@ set(DEP_LIB_DIR ${DEP_INSTALL_DIR}/lib)
 
 if (EMSCRIPTEN)
   # 64-bit WASM memory model and multi-threading with pthread
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sMEMORY64=1 -pthread")
+  # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sMEMORY64=1 -pthread")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sMEMORY64=1 -pthread")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sMEMORY64=1 -pthread")
 endif()
@@ -20,7 +20,7 @@ ExternalProject_Add(
   UPDATE_COMMAND ""
   PATCH_COMMAND ""
   CMAKE_ARGS
-    -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+    # -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
     -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS}
     -DCMAKE_INSTALL_PREFIX=${DEP_INSTALL_DIR}
@@ -111,3 +111,37 @@ add_dependencies(imgui ${DEP_LIST})  # imgui requires glfw and glad.
 set(DEP_INCLUDE_DIR ${DEP_INCLUDE_DIR} ${IMGUI_SOURCE_DIR})
 set(DEP_LIST ${DEP_LIST} imgui)
 set(DEP_LIBS ${DEP_LIBS} imgui)
+
+# stb image
+ExternalProject_Add(
+  dep_stb
+  GIT_REPOSITORY "https://github.com/nothings/stb"
+  GIT_TAG "master"
+  GIT_SHALLOW 1
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  TEST_COMMAND ""
+  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy
+    ${PROJECT_BINARY_DIR}/dep_stb-prefix/src/dep_stb/stb_image.h
+    ${DEP_INSTALL_DIR}/include/stb/stb_image.h
+)
+set(DEP_LIST ${DEP_LIST} dep_stb)
+
+# glm
+ExternalProject_Add(
+  dep_glm
+  GIT_REPOSITORY "https://github.com/g-truc/glm"
+  GIT_TAG "1.0.1"
+  GIT_SHALLOW 1
+  UPDATE_COMMAND ""
+  PATCH_COMMAND ""
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  TEST_COMMAND ""
+  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${PROJECT_BINARY_DIR}/dep_glm-prefix/src/dep_glm/glm
+    ${DEP_INSTALL_DIR}/include/glm
+)
+set(DEP_LIST ${DEP_LIST} dep_glm)

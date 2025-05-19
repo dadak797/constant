@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 if (EMSCRIPTEN)
   # 64-bit WASM memory model and multi-threading with pthread
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sMEMORY64=1 -pthread")
+  # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -sMEMORY64=1 -pthread")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sMEMORY64=1 -pthread")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -sMEMORY64=1 -pthread")
 endif()
@@ -22,22 +22,24 @@ project(${PROJECT_NAME})
 # Add source files
 add_executable(${PROJECT_NAME}
   src/main.cpp
-  src/font_manager.cpp     src/font_manager.h
-  src/file_loader.cpp      src/file_loader.h
+  src/font_manager.cpp    src/font_manager.h
+  src/file_loader.cpp     src/file_loader.h
   src/bind_function.cpp
-  src/app.cpp              src/app.h
-  src/scene_window.cpp     src/scene_window.h
-  src/buffer.cpp           src/buffer.h
-  src/vertex_layout.cpp    src/vertex_layout.h
+  src/app.cpp             src/app.h
+  src/scene_window.cpp    src/scene_window.h
+  src/buffer.cpp          src/buffer.h
+  src/vertex_layout.cpp   src/vertex_layout.h
+  src/image.cpp           src/image.h
+  src/util/path_util.cpp  src/util/path_util.h
 )
 
 if(APPLE)
   target_sources(${PROJECT_NAME} PRIVATE
-    src/mac_helper.mm      src/mac_helper.h
+    src/platform/mac_helper.mm   src/platform/mac_helper.h
   )
 elseif(WIN32)
   target_sources(${PROJECT_NAME} PRIVATE
-    src/win_helper.cpp     src/win_helper.h)
+    src/platform/win_helper.cpp  src/platform/win_helper.h)
 endif()
 
 if (MSVC)
