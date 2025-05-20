@@ -31,6 +31,7 @@ add_executable(${PROJECT_NAME}
   src/vertex_layout.cpp   src/vertex_layout.h
   src/image.cpp           src/image.h
   src/util/path_util.cpp  src/util/path_util.h
+  src/texture.cpp         src/texture.h
 )
 
 if(APPLE)

@@ -8,6 +8,7 @@
 
 // glm
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Image;
 
@@ -39,7 +40,7 @@ public:
 #endif
     
 private:
-    Texture() = default;
+    Texture();
 
     void createTexture();
     void setTextureFromImage(const Image* image);

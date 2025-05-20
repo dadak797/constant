@@ -1,7 +1,7 @@
 #include "scene_window.h"
 #include "config/log_config.h"
-#include "font_manager.h"
 #include "config/gl_config.h"
+#include "font_manager.h"
 
 // ImGui
 #include <imgui.h>
@@ -14,8 +14,6 @@ SceneWindow::SceneWindow() {
 SceneWindow::~SceneWindow() {
     if (m_Framebuffer != 0) {
         glDeleteFramebuffers(1, &m_Framebuffer);
-        glDeleteTextures(1, &m_ColorTexture);
-        // glDeleteTextures(1, &m_DepthTexture);
     }
 }
 
@@ -31,29 +29,15 @@ void SceneWindow::init() {
 void SceneWindow::initFramebuffer() {
     if (m_Framebuffer != 0) {
         glDeleteFramebuffers(1, &m_Framebuffer);
-        glDeleteTextures(1, &m_ColorTexture);
-        // glDeleteTextures(1, &m_DepthTexture);
     }
 
     // Create framebuffer
     glGenFramebuffers(1, &m_Framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
 
-    // Create color texture
-    glGenTextures(1, &m_ColorTexture);
-    glBindTexture(GL_TEXTURE_2D, m_ColorTexture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorTexture, 0);
-
-    // Create depth texture
-    // glGenTextures(1, &m_DepthTexture);
-    // glBindTexture(GL_TEXTURE_2D, m_DepthTexture);
-    // glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_Width, m_Height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, NULL);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    // glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_DepthTexture, 0);
+    // Create color texture. The old texture is deleted by losing the reference.
+    m_ColorTexture = Texture::New(m_Width, m_Height, GL_RGBA);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorTexture->Get(), 0);
 
     // Check framebuffer status
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
@@ -172,7 +156,7 @@ void SceneWindow::Render(bool* openWindow) {
     clearFramebuffer();
 
     // Draw scene to framebuffer
-    ImGui::Image((ImTextureID)(intptr_t)m_ColorTexture, 
+    ImGui::Image((ImTextureID)(intptr_t)m_ColorTexture->Get(), 
                   ImVec2(m_Width, m_Height), 
                   ImVec2(0, 1), ImVec2(1, 0));  // Upside down of the texture y-coordinate
 

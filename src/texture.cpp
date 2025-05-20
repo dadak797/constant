@@ -1,5 +1,6 @@
 #include "texture.h"
 #include "image.h"
+#include "config/log_config.h"
 
 
 TextureUPtr Texture::New(const Image* image) {
@@ -13,8 +14,11 @@ TextureUPtr Texture::New(int32_t width, int32_t height, uint32_t format, uint32_
     auto texture = TextureUPtr(new Texture());
     texture->createTexture();
     texture->setTextureFormat(width, height, format, type);
-    texture->SetFilter(GL_LINEAR, GL_LINEAR);
+    texture->SetFilter(GL_LINEAR, GL_LINEAR);  // Set filter for empty texture
     return std::move(texture);
+}
+
+Texture::Texture() {
 }
 
 Texture::~Texture() {
@@ -39,9 +43,8 @@ void Texture::SetWrap(uint32_t sWrap, uint32_t tWrap) const {
     
 void Texture::createTexture() {
     glGenTextures(1, &m_Texture);
-    // Bind and set default filter and wrap option
-    Bind();
-    SetFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);  // To use mipmap, the first argument shoule be "GL_LINEAR_MIPMAP_LINEAR".
+    Bind();    
+    SetFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);  // Set default filter
     SetWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 }
 
@@ -120,6 +123,7 @@ static GLenum GetImageFormat(uint32_t internalFormat) {
     else if (internalFormat == GL_RED || internalFormat == GL_R8 || internalFormat == GL_R16F || internalFormat == GL_R32F) {
         imageFormat = GL_RED;
     }
+
     return imageFormat;
 }
 
@@ -129,7 +133,7 @@ void Texture::setTextureFormat(int32_t width, int32_t height, uint32_t format, u
     m_Format = format;
     m_Type = type;
 
-    GLenum imageFormat = GetImageFormat(m_Format); 
+    GLenum imageFormat = GetImageFormat(m_Format);
 
     // m_Format: Internal format
     // imageFormat: Image format

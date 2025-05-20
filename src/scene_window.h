@@ -1,6 +1,7 @@
 #pragma once
 
 #include "macro/singleton_macro.h"
+#include "texture.h"
 
 // Standard library
 #include <cstdint>
@@ -16,8 +17,8 @@ public:
 
 private:
     uint32_t m_Framebuffer { 0 };
-    uint32_t m_ColorTexture { 0 };
-    // uint32_t m_DepthTexture { 0 };
+    TextureUPtr m_ColorTexture { nullptr };
+
     int32_t m_Width { 960 };
     int32_t m_Height { 640 };
 
