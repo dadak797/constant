@@ -13,8 +13,13 @@
 DECLARE_PTR(Image)
 class Image {
 public:
-    static ImageUPtr Load(const std::string& filepath, bool flipVertical = true);
+    // Create image from file
+    static ImageUPtr New(const std::string& filepath, bool flipVertical = true);
+
+    // Create empty image
     static ImageUPtr New(int32_t width, int32_t height, int32_t channelCount = 4, int32_t bytePerChannel = 1);
+
+    // Create image with single color
     static ImageUPtr New(int32_t width, int32_t height, const glm::vec4& color);
 
     ~Image();

@@ -14,7 +14,7 @@ TextureUPtr Texture::New(int32_t width, int32_t height, uint32_t format, uint32_
     auto texture = TextureUPtr(new Texture());
     texture->createTexture();
     texture->setTextureFormat(width, height, format, type);
-    texture->SetFilter(GL_LINEAR, GL_LINEAR);  // Set filter for empty texture
+    texture->setFilter(GL_LINEAR, GL_LINEAR);  // Set filter for empty texture
     return std::move(texture);
 }
 
@@ -31,12 +31,12 @@ void Texture::Bind() const {
     glBindTexture(GL_TEXTURE_2D, m_Texture);
 }
 
-void Texture::SetFilter(uint32_t minFilter, uint32_t magFilter) const {
+void Texture::setFilter(uint32_t minFilter, uint32_t magFilter) const {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
 }
 
-void Texture::SetWrap(uint32_t sWrap, uint32_t tWrap) const {
+void Texture::setWrap(uint32_t sWrap, uint32_t tWrap) const {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sWrap);  // X-direction of texture
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, tWrap);  // Y-direction of texture
 }
@@ -44,8 +44,8 @@ void Texture::SetWrap(uint32_t sWrap, uint32_t tWrap) const {
 void Texture::createTexture() {
     glGenTextures(1, &m_Texture);
     Bind();    
-    SetFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);  // Set default filter
-    SetWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
+    setFilter(GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);  // Set default filter
+    setWrap(GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE);
 }
 
 void Texture::setTextureFromImage(const Image* image) {
@@ -95,7 +95,7 @@ void Texture::setTextureFromImage(const Image* image) {
 #ifdef __EMSCRIPTEN__
     // WebGL doesn't support GL_FLOAT for mipmap.
     if (m_Type == GL_FLOAT) {
-        SetFilter(GL_LINEAR, GL_LINEAR);
+        setFilter(GL_LINEAR, GL_LINEAR);
     }
     else {
         glGenerateMipmap(GL_TEXTURE_2D);
@@ -143,7 +143,7 @@ void Texture::setTextureFormat(int32_t width, int32_t height, uint32_t format, u
 }
 
 #ifndef __EMSCRIPTEN__
-void Texture::SetBorderColor(const glm::vec4& color) const {
+void Texture::setBorderColor(const glm::vec4& color) const {
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(color));
 }
 #endif

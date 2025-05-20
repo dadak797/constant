@@ -70,6 +70,5 @@ bool Framebuffer::initWithColorAttachments(const std::vector<TexturePtr>& colorA
     }
 
     BindToDefault();
-
     return true;
 }

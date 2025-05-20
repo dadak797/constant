@@ -7,7 +7,7 @@
 #include <stb/stb_image.h>
 
 
-ImageUPtr Image::Load(const std::string& filepath, bool flipVertical) {
+ImageUPtr Image::New(const std::string& filepath, bool flipVertical) {
     auto image = ImageUPtr(new Image());
     if (!image->loadWithStb(filepath, flipVertical)) {
         return nullptr;
