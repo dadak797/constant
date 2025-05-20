@@ -12,9 +12,6 @@ SceneWindow::SceneWindow() {
 }
 
 SceneWindow::~SceneWindow() {
-    if (m_Framebuffer != 0) {
-        glDeleteFramebuffers(1, &m_Framebuffer);
-    }
 }
 
 void SceneWindow::init() {
@@ -27,25 +24,19 @@ void SceneWindow::init() {
 }
 
 void SceneWindow::initFramebuffer() {
-    if (m_Framebuffer != 0) {
-        glDeleteFramebuffers(1, &m_Framebuffer);
-    }
-
-    // Create framebuffer
-    glGenFramebuffers(1, &m_Framebuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
-
     // Create color texture. The old texture is deleted by losing the reference.
     m_ColorTexture = Texture::New(m_Width, m_Height, GL_RGBA);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorTexture->Get(), 0);
-
-    // Check framebuffer status
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-        SPDLOG_ERROR("Scene framebuffer is not complete!");
+    if (!m_ColorTexture) {
+        SPDLOG_ERROR("Failed to create color texture!");
+        return;
     }
 
-    // Bind to default buffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // Create framebuffer. The old framebuffer is deleted by losing the reference.
+    m_Framebuffer = Framebuffer::New({ m_ColorTexture });
+    if (!m_Framebuffer) {
+        SPDLOG_ERROR("Failed to create framebuffer!");
+        return;
+    }
 
     SPDLOG_DEBUG("Scene framebuffer initialized: ({} x {})", m_Width, m_Height);  
 }
@@ -62,16 +53,14 @@ void SceneWindow::resizeFramebuffer(int32_t width, int32_t height) {
 
 void SceneWindow::clearFramebuffer() {
     // Bind scene framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, m_Framebuffer);
-    glViewport(0, 0, m_Width, m_Height);
+    m_Framebuffer->Bind();
 
-    // Render background
+    glViewport(0, 0, m_Width, m_Height);
     glClearColor(m_BgColor.at(0), m_BgColor.at(1), m_BgColor.at(2), 1.0f);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     // Bind to default framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_Framebuffer->BindToDefault();
 }
 
 void SceneWindow::processEvents() {

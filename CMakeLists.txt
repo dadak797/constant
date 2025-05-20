@@ -32,6 +32,7 @@ add_executable(${PROJECT_NAME}
   src/image.cpp           src/image.h
   src/util/path_util.cpp  src/util/path_util.h
   src/texture.cpp         src/texture.h
+  src/framebuffer.cpp     src/framebuffer.h
 )
 
 if(APPLE)

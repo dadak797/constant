@@ -1,7 +1,7 @@
 #pragma once
 
 #include "macro/singleton_macro.h"
-#include "texture.h"
+#include "framebuffer.h"
 
 // Standard library
 #include <cstdint>
@@ -16,8 +16,8 @@ public:
     void RenderBgColorPopup(bool* openWindow = nullptr);
 
 private:
-    uint32_t m_Framebuffer { 0 };
-    TextureUPtr m_ColorTexture { nullptr };
+    FramebufferUPtr m_Framebuffer { nullptr };
+    TexturePtr m_ColorTexture { nullptr };
 
     int32_t m_Width { 960 };
     int32_t m_Height { 640 };
