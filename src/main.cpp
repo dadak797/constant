@@ -1,18 +1,13 @@
 #include "config/log_config.h"
+#include "config/gl_config.h"
 #include "app.h"
 #include "font_manager.h"
 #include "file_loader.h"
 
-
 #ifdef __EMSCRIPTEN__
     #include <emscripten/emscripten.h>
     #include <emscripten/html5.h>
-    #define GLFW_INCLUDE_ES3    // Include OpenGL ES 3.0 headers
-    #define GLFW_INCLUDE_GLEXT  // Include to OpenGL ES extension headers
-#else  
-    #include <glad/glad.h>
 #endif
-#include <GLFW/glfw3.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 

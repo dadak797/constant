@@ -3,9 +3,6 @@
 #include "macro/ptr_macro.h"
 #include "config/gl_config.h"
 
-// Standard library
-#include <memory>
-
 // glm
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>

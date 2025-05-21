@@ -4,7 +4,6 @@
 #include "texture.h"
 
 // Standard library
-#include <memory>
 #include <vector>
 
 

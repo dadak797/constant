@@ -3,7 +3,6 @@
 #include "macro/ptr_macro.h"
 
 // Standard library
-#include <memory>
 #include <string>
 
 // glm

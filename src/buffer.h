@@ -2,9 +2,6 @@
 
 #include "macro/ptr_macro.h"
 
-// Standard library
-#include <memory>
-
 
 DECLARE_PTR(Buffer)
 class Buffer {
