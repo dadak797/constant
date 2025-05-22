@@ -19,7 +19,7 @@ std::optional<std::string> FileUtil::ReadFileToString(
   content.reserve(file.tellg());  // Allocate memory for the content
   file.seekg(0, std::ios::beg);   // Move back to the beginning of the file
 
-  content.assign((std::istreambuf_iterator<char>(file)),
+  content.assign(std::istreambuf_iterator<char>(file),
                  std::istreambuf_iterator<char>());
   file.close();
 

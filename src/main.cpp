@@ -25,7 +25,7 @@
 
 
 void OnGlfwError(int32_t errorCode, const char* description) {
-    SPDLOG_ERROR("GLFW error (code {}}): {}", errorCode, description);
+    SPDLOG_ERROR("GLFW error (code {}): {}", errorCode, description);
     
     switch (errorCode)
     {

@@ -37,6 +37,7 @@ add_executable(${PROJECT_NAME}
   src/shader_program.cpp   src/shader_program.h
   src/shader.cpp           src/shader.h
   src/util/file_util.cpp   src/util/file_util.h
+  src/mesh.cpp             src/mesh.h
 )
 
 if(APPLE)

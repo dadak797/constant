@@ -17,6 +17,8 @@ class RenderMaterial {
   void SetDiffuse(TexturePtr diffuse);
   void SetSpecular(TexturePtr specular);
   void SetShininess(float shininess);
+  void SetDiffuseColor(const glm::vec3& color) { m_DiffuseColor = color; }
+  void SetUseDiffuseTexture(bool use) { m_bUseDiffuseTexture = use; }
 
   // Getters
   TexturePtr GetDiffuse() const { return m_Diffuse; }
@@ -31,4 +33,7 @@ class RenderMaterial {
   TexturePtr m_Diffuse{nullptr};
   TexturePtr m_Specular{nullptr};
   float m_Shininess{32.0f};
+
+  glm::vec3 m_DiffuseColor{glm::vec3(0.8f, 0.8f, 0.8f)};  // Single diffuse color
+  bool m_bUseDiffuseTexture{true};  // Use texture or single color
 };

@@ -15,7 +15,7 @@ class Shader {
  private:
   Shader() = default;
 
-  bool loadFile(const std::string& filename, GLenum);
+  bool loadFile(const std::string& filename, GLenum shaderType);
 
   uint32_t m_Shader{0};
 };
