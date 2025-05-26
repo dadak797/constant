@@ -22,22 +22,23 @@ project(${PROJECT_NAME})
 # Add source files
 add_executable(${PROJECT_NAME}
   src/main.cpp
-  src/font_manager.cpp     src/font_manager.h
-  src/file_loader.cpp      src/file_loader.h
+  src/font_manager.cpp        src/font_manager.h
+  src/file_loader.cpp         src/file_loader.h
   src/bind_function.cpp
-  src/app.cpp              src/app.h
-  src/scene_window.cpp     src/scene_window.h
-  src/buffer.cpp           src/buffer.h
-  src/vertex_layout.cpp    src/vertex_layout.h
-  src/image.cpp            src/image.h
-  src/util/path_util.cpp   src/util/path_util.h
-  src/texture.cpp          src/texture.h
-  src/framebuffer.cpp      src/framebuffer.h
-  src/render_material.cpp  src/render_material.h
-  src/shader_program.cpp   src/shader_program.h
-  src/shader.cpp           src/shader.h
-  src/util/file_util.cpp   src/util/file_util.h
-  src/mesh.cpp             src/mesh.h
+  src/app.cpp                 src/app.h
+  src/scene_window.cpp        src/scene_window.h
+  src/buffer.cpp              src/buffer.h
+  src/vertex_layout.cpp       src/vertex_layout.h
+  src/image.cpp               src/image.h
+  src/util/path_util.cpp      src/util/path_util.h
+  src/texture.cpp             src/texture.h
+  src/framebuffer.cpp         src/framebuffer.h
+  src/render_material.cpp     src/render_material.h
+  src/shader_program.cpp      src/shader_program.h
+  src/shader.cpp              src/shader.h
+  src/util/file_util.cpp      src/util/file_util.h
+  src/mesh.cpp                src/mesh.h
+  src/config/size_config.cpp  src/config/size_config.h
 )
 
 if(APPLE)

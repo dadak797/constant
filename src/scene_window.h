@@ -20,8 +20,13 @@ class SceneWindow {
   FramebufferUPtr m_Framebuffer{nullptr};
   TexturePtr m_ColorTexture{nullptr};
 
-  int32_t m_Width{960};
-  int32_t m_Height{640};
+  // In WebAssembly, the framebuffer and scene size are the same as the canvas size.
+  // In native applications, the framebuffer size can be different from the scene size.
+  // The framebuffer size is the size of the texture, and the scene size is the size of the ImGui window.
+  int32_t m_FramebufferWidth{960};
+  int32_t m_FramebufferHeight{640};
+  int32_t m_SceneWidth{960};
+  int32_t m_SceneHeight{640};
 
   std::array<float, 3> m_BgColor{0.1f, 0.2f, 0.3f};
 

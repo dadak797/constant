@@ -1,6 +1,6 @@
 #include "font_manager.h"
 #include "config/log_config.h"
-#include "app.h"
+#include "config/size_config.h"
 
 
 FontManager::FontManager() {
@@ -47,8 +47,8 @@ void FontManager::loadFontAwesome6S() {
 
     // Font 1. NotoSansKR-Light + FontAwesome6-Solid (Default font)
     static const ImWchar icons_fa6_ranges[] = { ICON_MIN_FA6, ICON_MAX_16_FA6, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6S, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa6_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6S, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa6_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome6S, pImFont));
 
     SPDLOG_DEBUG("FontManager::loadFontAwesome6S() - Default font is loaded.");
@@ -59,8 +59,8 @@ void FontManager::loadFontAwesome6R() {
 
     // Font 2. NotoSansKR-Light + FontAwesome6-Regular
     static const ImWchar icons_fa6_ranges[] = { ICON_MIN_FA6, ICON_MAX_16_FA6, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6R, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa6_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6R, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa6_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome6R, pImFont));
 
     SPDLOG_DEBUG("FontAwesome6-Regular is loaded.");
@@ -71,8 +71,8 @@ void FontManager::loadFontAwesome6B() {
 
     // Font 3. NotoSansKR-Light + FontAwesome6-Brands
     static const ImWchar icons_fa6b_ranges[] = { ICON_MIN_FA6B, ICON_MAX_16_FA6B, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6B, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa6b_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA6B, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa6b_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome6B, pImFont));
 
     SPDLOG_DEBUG("FontAwesome6-Brands is loaded.");
@@ -83,8 +83,8 @@ void FontManager::loadFontAwesome5S() {
 
     // Font 4. NotoSansKR-Light + FontAwesome5-Solid
     static const ImWchar icons_fa5_ranges[] = { ICON_MIN_FA5, ICON_MAX_16_FA5, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5S, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa5_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5S, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa5_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome5S, pImFont));
 
     SPDLOG_DEBUG("FontAwesome5-Solid is loaded.");
@@ -95,8 +95,8 @@ void FontManager::loadFontAwesome5R() {
 
     // Font 5. NotoSansKR-Light + FontAwesome5-Regular
     static const ImWchar icons_fa5_ranges[] = { ICON_MIN_FA5, ICON_MAX_16_FA5, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5R, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa5_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5R, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa5_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome5R, pImFont));
 
     SPDLOG_DEBUG("FontAwesome5-Regular is loaded.");
@@ -107,8 +107,8 @@ void FontManager::loadFontAwesome5B() {
 
     // Font 6. NotoSansKR-Light + FontAwesome5-Brands
     static const ImWchar icons_fa5b_ranges[] = { ICON_MIN_FA5B, ICON_MAX_16_FA5B, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5B, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa5b_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA5B, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa5b_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome5B, pImFont));
 
     SPDLOG_DEBUG("FontAwesome5-Brands is loaded.");
@@ -119,8 +119,8 @@ void FontManager::loadFontAwesome4() {
 
     // Font 7. NotoSansKR-Light + FontAwesome4
     static const ImWchar icons_fa4_ranges[] = { ICON_MIN_FA4, ICON_MAX_FA4, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA4, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa4_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FA4, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_fa4_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAwesome4, pImFont));
 
     SPDLOG_DEBUG("FontAwesome4 is loaded.");
@@ -133,8 +133,8 @@ void FontManager::loadCodIcons() {
     static const ImWchar icons_cod_ranges[] = { ICON_MIN_CI, ICON_MAX_16_CI, 0 };
     ImFontConfig codicons_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
     codicons_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_CI, 12.0f * App::DevicePixelRatio(), &codicons_config, icons_cod_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_CI, 12.0f * SizeConfig::DevicePixelRatio(), &codicons_config, icons_cod_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::CodIcons, pImFont));
 
     SPDLOG_DEBUG("CodIcons is loaded.");
@@ -147,8 +147,8 @@ void FontManager::loadFontAudio() {
     static const ImWchar icons_fontaudio_ranges[] = { ICON_MIN_FAD, ICON_MAX_16_FAD, 0 };
     ImFontConfig fontaudio_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
     fontaudio_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAD, 14.0f * App::DevicePixelRatio(), &fontaudio_config, icons_fontaudio_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FAD, 14.0f * SizeConfig::DevicePixelRatio(), &fontaudio_config, icons_fontaudio_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::FontAudio, pImFont));
 
     SPDLOG_DEBUG("FontAudio is loaded.");
@@ -159,8 +159,8 @@ void FontManager::loadForkAwesome() {
 
     // Font 10. NotoSansKR-Light + ForkAwesome
     static const ImWchar icons_forkawesome_ranges[] = { ICON_MIN_FK, ICON_MAX_16_FK, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FK, 12.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_forkawesome_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_FK, 12.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_forkawesome_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::ForkAwesome, pImFont));
 
     SPDLOG_DEBUG("ForkAwesome is loaded.");
@@ -171,8 +171,8 @@ void FontManager::loadKenney() {
 
     // Font 11. NotoSansKR-Light + Kenney
     static const ImWchar icons_kenney_ranges[] = { ICON_MIN_KI, ICON_MAX_16_KI, 0 };
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_KI, 11.0f * App::DevicePixelRatio(), &m_DefaultFontConfig, icons_kenney_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_KI, 11.0f * SizeConfig::DevicePixelRatio(), &m_DefaultFontConfig, icons_kenney_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::Kenney, pImFont));
 
     SPDLOG_DEBUG("Kenney is loaded.");
@@ -185,8 +185,8 @@ void FontManager::loadLucide() {
     static const ImWchar icons_lucide_ranges[] = { ICON_MIN_LC, ICON_MAX_16_LC, 0 };
     ImFontConfig lucide_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
     lucide_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_LC, 12.0f * App::DevicePixelRatio(), &lucide_config, icons_lucide_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_LC, 12.0f * SizeConfig::DevicePixelRatio(), &lucide_config, icons_lucide_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::Lucide, pImFont));
 
     SPDLOG_DEBUG("Lucide is loaded.");
@@ -199,8 +199,8 @@ void FontManager::loadMaterialDesign() {
     static const ImWchar icons_materialdesign_ranges[] = { ICON_MIN_MD, ICON_MAX_16_MD, 0 };
     ImFontConfig materialdesign_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
     materialdesign_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MD, 13.0f * App::DevicePixelRatio(), &materialdesign_config, icons_materialdesign_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MD, 13.0f * SizeConfig::DevicePixelRatio(), &materialdesign_config, icons_materialdesign_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::MaterialDesign, pImFont));
 
     SPDLOG_DEBUG("MaterialDesign is loaded.");
@@ -213,8 +213,8 @@ void FontManager::loadMaterialDesign() {
 //     static const ImWchar icons_materialdesignicons_ranges[] = { ICON_MIN_MDI, ICON_MAX_16_MDI, 0 };
 //     ImFontConfig materialdesignicons_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
 //     materialdesignicons_config.GlyphOffset.y = 2.0f;        // Adjust vertical offset
-//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MDI, 12.0f * App::DevicePixelRatio(), &materialdesignicons_config, icons_materialdesignicons_ranges);
+//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MDI, 12.0f * SizeConfig::DevicePixelRatio(), &materialdesignicons_config, icons_materialdesignicons_ranges);
 //     m_FontIcons.insert(std::make_pair(FontIcon::MaterialDesignIcons, pImFont));
 //
 //     SPDLOG_DEBUG("MaterialDesignIcons is loaded.");
@@ -227,8 +227,8 @@ void FontManager::loadMaterialSymbolsO() {
     static const ImWchar icons_materialsymbols_ranges[] = { ICON_MIN_MS, ICON_MAX_16_MS, 0 };
     ImFontConfig materialsymbols_config = m_DefaultFontConfig;  // Copy from m_DefaultFontConfig
     materialsymbols_config.GlyphOffset.y = 2.0f;  // Adjust vertical offset
-    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSO, 15.0f * App::DevicePixelRatio(), &materialsymbols_config, icons_materialsymbols_ranges);
+    ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+    io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSO, 15.0f * SizeConfig::DevicePixelRatio(), &materialsymbols_config, icons_materialsymbols_ranges);
     m_FontIcons.insert(std::make_pair(FontIcon::MaterialSymbolsO, pImFont));
 
     SPDLOG_DEBUG("MaterialSymbolsOutlined is loaded.");
@@ -238,8 +238,8 @@ void FontManager::loadMaterialSymbolsO() {
 //     ImGuiIO& io = ImGui::GetIO();
 //
 //     // Font 16. NotoSansKR-Light + MaterialSymbolsRounded (No difference with MaterialSymbolsOutlined)
-//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSR, 15.0f * App::DevicePixelRatio(), &materialsymbols_config, icons_materialsymbols_ranges);
+//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSR, 15.0f * SizeConfig::DevicePixelRatio(), &materialsymbols_config, icons_materialsymbols_ranges);
 //     m_FontIcons.insert(std::make_pair(FontIcon::MaterialSymbolsR, pImFont));
 //
 //     SPDLOG_DEBUG("MaterialSymbolsRounded is loaded.");
@@ -249,8 +249,8 @@ void FontManager::loadMaterialSymbolsO() {
 //     ImGuiIO& io = ImGui::GetIO();
 //
 //     // Font 17. NotoSansKR-Light + MaterialSymbolsSharp (No difference with MaterialSymbolsOutlined)
-//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * App::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
-//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSS, 15.0f * App::DevicePixelRatio(), &materialsymbols_config, icons_materialsymbols_ranges);
+//     ImFont* pImFont = io.Fonts->AddFontFromFileTTF("./resources/font/NotoSansKR-Light.ttf", 15.0f * SizeConfig::DevicePixelRatio(), nullptr, io.Fonts->GetGlyphRangesKorean());
+//     io.Fonts->AddFontFromFileTTF(FONT_ICON_FILE_NAME_MSS, 15.0f * SizeConfig::DevicePixelRatio(), &materialsymbols_config, icons_materialsymbols_ranges);
 //     m_FontIcons.insert(std::make_pair(FontIcon::MaterialSymbolsS, pImFont));
 //
 //     SPDLOG_DEBUG("MaterialSymbolsSharp is loaded.");

@@ -1,5 +1,6 @@
 #include "config/log_config.h"
 #include "config/gl_config.h"
+#include "config/size_config.h"
 #include "app.h"
 #include "font_manager.h"
 #include "file_loader.h"
@@ -178,9 +179,9 @@ int main() {
 #ifdef __EMSCRIPTEN__
     // const float dpRatio = emscripten_get_device_pixel_ratio();
     // io.FontGlobalScale = dpRatio;
-    style.ScaleAllSizes(App::DevicePixelRatio());
+    style.ScaleAllSizes(SizeConfig::DevicePixelRatio());
 #else
-    io.FontGlobalScale = 1.0f / App::DevicePixelRatio();
+    io.FontGlobalScale = 1.0f / SizeConfig::DevicePixelRatio();
 #endif
 
 #ifdef __EMSCRIPTEN__

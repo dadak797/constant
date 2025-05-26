@@ -2,6 +2,7 @@
 
 #include "config/gl_config.h"
 #include "config/log_config.h"
+#include "config/size_config.h"
 #include "font_manager.h"
 
 // ImGui
@@ -27,7 +28,7 @@ void SceneWindow::init() {
 
 void SceneWindow::initFramebuffer() {
   // Create color texture. The old texture is deleted by losing the reference.
-  m_ColorTexture = Texture::New(m_Width, m_Height, GL_RGBA);
+  m_ColorTexture = Texture::New(m_FramebufferWidth, m_FramebufferHeight, GL_RGBA);
   if (!m_ColorTexture) {
     SPDLOG_ERROR("Failed to create color texture!");
     return;
@@ -40,14 +41,15 @@ void SceneWindow::initFramebuffer() {
     return;
   }
 
-  SPDLOG_DEBUG("Scene framebuffer initialized: ({} x {})", m_Width, m_Height);
+  SPDLOG_DEBUG("Scene framebuffer initialized: ({} x {})", m_FramebufferWidth, m_FramebufferHeight);
 }
 
 void SceneWindow::resizeFramebuffer(int32_t width, int32_t height) {
   if (width <= 0 || height <= 0) return;
 
-  m_Width = width;
-  m_Height = height;
+  // Update framebuffer size
+  m_FramebufferWidth = width;
+  m_FramebufferHeight = height;
 
   initFramebuffer();
 }
@@ -59,7 +61,7 @@ void SceneWindow::renderMesh() {
 
   // Projection matrix
   float aspectRatio =
-      static_cast<float>(m_Width) / static_cast<float>(m_Height);
+      static_cast<float>(m_FramebufferWidth) / static_cast<float>(m_FramebufferHeight);
   glm::mat4 projection =
       glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 
@@ -91,7 +93,7 @@ void SceneWindow::clearFramebuffer() {
   // Bind scene framebuffer
   m_Framebuffer->Bind();
 
-  glViewport(0, 0, m_Width, m_Height);
+  glViewport(0, 0, m_FramebufferWidth, m_FramebufferHeight);
   glClearColor(m_BgColor.at(0), m_BgColor.at(1), m_BgColor.at(2), 1.0f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -117,8 +119,8 @@ void SceneWindow::processEvents() {
   if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
     dragStartPos = io.MousePos;
 
-    float titleBarHeight =
-        ImGui::GetFrameHeight() + ImGui::GetStyle().FramePadding.y;
+    float titleBarHeight = viewportPos.y;
+    // float titleBarHeight = ImGui::GetFrameHeight() + ImGui::GetStyle().FramePadding.y;
 
     if (io.MousePos.y >= windowPos.y &&
         io.MousePos.y <= windowPos.y + titleBarHeight &&
@@ -143,10 +145,14 @@ void SceneWindow::processEvents() {
 
   io.ConfigWindowsMoveFromTitleBarOnly = true;
 
-  int32_t xpos =
+  int32_t posX =
       static_cast<int32_t>(io.MousePos.x - windowPos.x - viewportPos.x);
-  int32_t ypos =
+  int32_t posY =
       static_cast<int32_t>(io.MousePos.y - windowPos.y - viewportPos.y);
+
+  // Get clicked position with normalized device coordinates (NDC)
+  float ndcX = 2.0f * (posX / static_cast<float>(m_SceneWidth)) - 1.0f;
+  float ndcY = 1.0f - 2.0f * (posY / static_cast<float>(m_SceneHeight));  // Inverted Y-axis
 
   int32_t ctrl = static_cast<int32_t>(io.KeyCtrl);
   int32_t shift = static_cast<int32_t>(io.KeyShift);
@@ -155,7 +161,7 @@ void SceneWindow::processEvents() {
 
   if (ImGui::IsWindowHovered()) {
     if (io.MouseClicked[ImGuiMouseButton_Left]) {
-      SPDLOG_DEBUG("Mouse position: ({}, {})", xpos, ypos);
+      SPDLOG_DEBUG("Mouse position: ({}, {})", ndcX, ndcY);
     } else if (io.MouseClicked[ImGuiMouseButton_Right]) {
       ImGui::SetWindowFocus();  // make right-clicks bring window into focus
     } else if (io.MouseWheel > 0) {
@@ -174,12 +180,31 @@ void SceneWindow::Render(bool* openWindow) {
 
   ImGui::Begin("Scene");
 
+  // Get framebuffer and scene sizes
+  ImVec2 sceneSize = ImGui::GetContentRegionAvail();
+  int32_t newFramebufferWidth, newFramebufferHeight;
+#ifdef __EMSCRIPTEN__
+  // For Emscripten, GetContentRegionAvail() returns the size in CSS pixels.
+  // The size already accounts for the device pixel ratio, so we can use it
+  // directly.
+  newFramebufferWidth = static_cast<int32_t>(sceneSize.x);
+  newFramebufferHeight = static_cast<int32_t>(sceneSize.y);
+#else
+  // For native platforms, GetContentRegionAvail() returns the physical pixel size.
+  float dpRatio = static_cast<float>(SizeConfig::DevicePixelRatio());
+  newFramebufferWidth =
+      static_cast<int32_t>(sceneSize.x * dpRatio);
+  newFramebufferHeight = 
+      static_cast<int32_t>(sceneSize.y * dpRatio);
+#endif
+  m_SceneWidth = static_cast<int32_t>(sceneSize.x);
+  m_SceneHeight = static_cast<int32_t>(sceneSize.y);
+
   // Resize framebuffer
-  ImVec2 contentSize = ImGui::GetContentRegionAvail();
-  if (contentSize.x > 0 && contentSize.y > 0 &&
-      (m_Width != (int32_t)contentSize.x ||
-       m_Height != (int32_t)contentSize.y)) {
-    resizeFramebuffer((int32_t)contentSize.x, (int32_t)contentSize.y);
+  if (newFramebufferWidth > 0 && newFramebufferHeight > 0 &&
+      (m_FramebufferWidth != newFramebufferWidth ||
+       m_FramebufferHeight != newFramebufferHeight)) {
+    resizeFramebuffer(newFramebufferWidth, newFramebufferHeight);
   }
 
   // Clear framebuffer with background color
@@ -187,7 +212,7 @@ void SceneWindow::Render(bool* openWindow) {
 
   // Draw scene to framebuffer
   ImGui::Image((ImTextureID)(intptr_t)m_ColorTexture->Get(),
-               ImVec2(m_Width, m_Height), ImVec2(0, 1),
+               ImVec2(m_SceneWidth, m_SceneHeight), ImVec2(0, 1),
                ImVec2(1, 0));  // Upside down of the texture y-coordinate
 
   processEvents();

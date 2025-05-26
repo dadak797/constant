@@ -35,7 +35,7 @@
     </script>
     <script>
       // Wait for the page to be fully loaded
-      window.onload = function() {
+      window.onload = function () {
         let moduleConfig = {
           print: (function () {
             return function (text) {
@@ -72,12 +72,12 @@
           },
           onRuntimeInitialized: function () {
             console.log("Viewer runtime initialized.");
-        
+
             let canvas = document.getElementById("canvas");
-        
+
             // focus on the canvas to grab keyboard inputs.
             canvas.setAttribute("tabindex", "0");
-        
+
             // grab focus when the render window region receives mouse clicks.
             canvas.addEventListener("click", () => canvas.focus());
           },
@@ -85,7 +85,7 @@
             return `/wasm/${path}`;
           },
         };
-        
+
         Viewer(moduleConfig).then((module) => {
           // Export module to global module - module name: "Constant"
           window.Constant = module;
@@ -112,7 +112,8 @@
             );
             if (aDummyModule instanceof WebAssembly.Module) {
               return (
-                new WebAssembly.Instance(aDummyModule) instanceof WebAssembly.Instance
+                new WebAssembly.Instance(aDummyModule) instanceof
+                WebAssembly.Instance
               );
             }
           }
