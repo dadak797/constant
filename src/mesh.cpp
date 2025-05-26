@@ -55,7 +55,17 @@ void Mesh::init() {
     ComputeTangents(m_Vertices, m_Indices);
   }
 
+  // NOTE: The order should be as follows:
+  // 1. Vertex layout binding
+  // 2. Vertex buffer binding
+  // 3. Vertex attribute setting
   m_VertexLayout = VertexLayout::New();
+  m_VertexBuffer =
+      Buffer::New(GL_ARRAY_BUFFER, GL_STATIC_DRAW, m_Vertices.data(),
+                  sizeof(Vertex), m_Vertices.size());
+  m_IndexBuffer =
+      Buffer::New(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, m_Indices.data(),
+                  sizeof(uint32_t), m_Indices.size());
   m_VertexLayout->SetAttrib(0, 3, GL_FLOAT, false, sizeof(Vertex), 0);
   m_VertexLayout->SetAttrib(1, 3, GL_FLOAT, false, sizeof(Vertex),
                             offsetof(Vertex, normal));
@@ -63,13 +73,6 @@ void Mesh::init() {
                             offsetof(Vertex, texCoord));
   m_VertexLayout->SetAttrib(3, 3, GL_FLOAT, false, sizeof(Vertex),
                             offsetof(Vertex, tangent));
-
-  m_VertexBuffer =
-      Buffer::New(GL_ARRAY_BUFFER, GL_STATIC_DRAW, m_Vertices.data(),
-                  sizeof(Vertex), m_Vertices.size());
-  m_IndexBuffer =
-      Buffer::New(GL_ELEMENT_ARRAY_BUFFER, GL_STATIC_DRAW, m_Indices.data(),
-                  sizeof(uint32_t), m_Indices.size());
 }
 
 void Mesh::ComputeTangents(std::vector<Vertex>& vertices,

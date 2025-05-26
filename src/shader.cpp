@@ -1,7 +1,8 @@
 #include "shader.h"
-#include "util/file_util.h"
-#include "config/log_config.h"
+
 #include "config/gl_config.h"
+#include "config/log_config.h"
+#include "util/file_util.h"
 
 // Standard library
 #include <fstream>
@@ -33,11 +34,12 @@ bool Shader::loadFile(const std::string& filename, GLenum shaderType) {
   // #version 330 core -> #version 300 es\nprecision mediump float;
   std::string version = "#version 330 core";
   int start = code.find(version);
-  code.replace(
-      start, version.size(),
-      "#version 300 es\nprecision mediump float;");  // For better quality,
-                                                     // change mediump into
-                                                     // highp
+  code.replace(start, version.size(),
+               "#version 300 es\nprecision highp float;\n"
+               "precision mediump int;\n"
+               "precision highp sampler2D;");  // For better quality,
+                                               // change mediump into
+                                               // highp
 #endif
   const char* codePtr = code.c_str();
   int32_t codeLength = (int32_t)code.length();
