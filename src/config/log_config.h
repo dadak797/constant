@@ -17,7 +17,8 @@
 // - SPDLOG_CRITICAL: Critical message
 
 // For debug build (Format: [timestamp] [level] [source:line] message)
-// - SPDLOG_DEBUG, SPDLOG_INFO, SPDLOG_WARN, SPDLOG_ERROR and SPDLOG_CRITICAL can be used.
+// - SPDLOG_DEBUG, SPDLOG_INFO, SPDLOG_WARN, SPDLOG_ERROR and SPDLOG_CRITICAL
+// can be used.
 // - SPDLOG_TRACE is not used in debug build.
 
 // For release build (Format: [timestamp] [level] message)

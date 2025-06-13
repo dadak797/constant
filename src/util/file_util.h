@@ -1,11 +1,11 @@
 #pragma once
 
 // Standard library
-#include <string>
 #include <optional>
+#include <string>
 
 namespace FileUtil {
 
-std::optional<std::string> ReadFileToString(const std::string& filePath);  
+std::optional<std::string> ReadFileToString(const std::string& filePath);
 
 }

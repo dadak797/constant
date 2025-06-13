@@ -1,273 +1,275 @@
-#include "config/log_config.h"
-#include "config/gl_config.h"
-#include "config/size_config.h"
 #include "app.h"
-#include "font_manager.h"
+#include "config/gl_config.h"
+#include "config/log_config.h"
+#include "config/size_config.h"
 #include "file_loader.h"
+#include "font_manager.h"
 
 #ifdef __EMSCRIPTEN__
-    #include <emscripten/emscripten.h>
-    #include <emscripten/html5.h>
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #endif
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 
-
 #ifdef __EMSCRIPTEN__
-    #include <functional>
-    static std::function<void()>            MainLoopForEmscriptenP;
-    static void MainLoopForEmscripten()     { MainLoopForEmscriptenP(); }
-    #define EMSCRIPTEN_MAINLOOP_BEGIN       MainLoopForEmscriptenP = [&]() { do
-    #define EMSCRIPTEN_MAINLOOP_END         while (0); }; emscripten_set_main_loop(MainLoopForEmscripten, 0, true)
+#include <functional>
+static std::function<void()> MainLoopForEmscriptenP;
+static void MainLoopForEmscripten() { MainLoopForEmscriptenP(); }
+#define EMSCRIPTEN_MAINLOOP_BEGIN MainLoopForEmscriptenP = [&]() { do
+#define EMSCRIPTEN_MAINLOOP_END \
+  while (0);                    \
+  }                             \
+  ;                             \
+  emscripten_set_main_loop(MainLoopForEmscripten, 0, true)
 #else
-    #define EMSCRIPTEN_MAINLOOP_BEGIN
-    #define EMSCRIPTEN_MAINLOOP_END
+#define EMSCRIPTEN_MAINLOOP_BEGIN
+#define EMSCRIPTEN_MAINLOOP_END
 #endif
 
-
 void OnGlfwError(int32_t errorCode, const char* description) {
-    SPDLOG_ERROR("GLFW error (code {}): {}", errorCode, description);
-    
-    switch (errorCode)
-    {
+  SPDLOG_ERROR("GLFW error (code {}): {}", errorCode, description);
+
+  switch (errorCode) {
     case GLFW_NOT_INITIALIZED:
-        SPDLOG_ERROR("GLFW has not been initialized");
-        break;
+      SPDLOG_ERROR("GLFW has not been initialized");
+      break;
     case GLFW_NO_CURRENT_CONTEXT:
-        SPDLOG_ERROR("No OpenGL context is current"); 
-        break;
+      SPDLOG_ERROR("No OpenGL context is current");
+      break;
     case GLFW_INVALID_ENUM:
-        SPDLOG_ERROR("Invalid enum value was passed");
-        break;
+      SPDLOG_ERROR("Invalid enum value was passed");
+      break;
     case GLFW_INVALID_VALUE:
-        SPDLOG_ERROR("Invalid value was passed");
-        break;
+      SPDLOG_ERROR("Invalid value was passed");
+      break;
     case GLFW_OUT_OF_MEMORY:
-        SPDLOG_ERROR("Memory allocation failed");
-        break;
+      SPDLOG_ERROR("Memory allocation failed");
+      break;
     case GLFW_API_UNAVAILABLE:
-        SPDLOG_ERROR("The requested API is unavailable");
-        break;
+      SPDLOG_ERROR("The requested API is unavailable");
+      break;
     case GLFW_VERSION_UNAVAILABLE:
-        SPDLOG_ERROR("The requested OpenGL version is unavailable");
-        break;
+      SPDLOG_ERROR("The requested OpenGL version is unavailable");
+      break;
     case GLFW_PLATFORM_ERROR:
-        SPDLOG_ERROR("A platform-specific error occurred");
-        break;
+      SPDLOG_ERROR("A platform-specific error occurred");
+      break;
     case GLFW_FORMAT_UNAVAILABLE:
-        SPDLOG_ERROR("The requested format is unavailable");
-        break;
-    }
+      SPDLOG_ERROR("The requested format is unavailable");
+      break;
+  }
 }
 
-void OnFramebufferSizeChange(GLFWwindow* window, int32_t width, int32_t height) {
-    SPDLOG_DEBUG("framebuffer size changed: ({} x {})", width, height);
-    glViewport(0, 0, width, height);
+void OnFramebufferSizeChange(GLFWwindow* window, int32_t width,
+                             int32_t height) {
+  SPDLOG_DEBUG("framebuffer size changed: ({} x {})", width, height);
+  glViewport(0, 0, width, height);
 }
 
-void OnKeyEvent(GLFWwindow* window, int32_t key, int32_t scancode, int32_t action, int32_t mods) {
-    ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
-    SPDLOG_DEBUG("key: {}, scancode: {}, action: {}, mods: {}{}{}",
-        key, scancode,
-        action == GLFW_PRESS ? "Pressed" :
-        action == GLFW_RELEASE ? "Released" :
-        action == GLFW_REPEAT ? "Repeat" : "Unknown",
-        mods & GLFW_MOD_CONTROL ? "C" : "-",
-        mods & GLFW_MOD_SHIFT ? "S" : "-",
-        mods & GLFW_MOD_ALT ? "A" : "-");
+void OnKeyEvent(GLFWwindow* window, int32_t key, int32_t scancode,
+                int32_t action, int32_t mods) {
+  ImGui_ImplGlfw_KeyCallback(window, key, scancode, action, mods);
+  SPDLOG_DEBUG("key: {}, scancode: {}, action: {}, mods: {}{}{}", key, scancode,
+               action == GLFW_PRESS     ? "Pressed"
+               : action == GLFW_RELEASE ? "Released"
+               : action == GLFW_REPEAT  ? "Repeat"
+                                        : "Unknown",
+               mods & GLFW_MOD_CONTROL ? "C" : "-",
+               mods & GLFW_MOD_SHIFT ? "S" : "-",
+               mods & GLFW_MOD_ALT ? "A" : "-");
 }
 
 void OnCharEvent(GLFWwindow* window, uint32_t ch) {
-    ImGui_ImplGlfw_CharCallback(window, ch);
+  ImGui_ImplGlfw_CharCallback(window, ch);
 }
 
 void OnScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
-    ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
+  ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
 }
 
-void OnMouseButtonEvent(GLFWwindow* window, int32_t button, int32_t action, int32_t mods)
-{
-    ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
+void OnMouseButtonEvent(GLFWwindow* window, int32_t button, int32_t action,
+                        int32_t mods) {
+  ImGui_ImplGlfw_MouseButtonCallback(window, button, action, mods);
 }
 
-void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos)
-{
-    ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
+void OnMouseMoveEvent(GLFWwindow* window, double xpos, double ypos) {
+  ImGui_ImplGlfw_CursorPosCallback(window, xpos, ypos);
 }
 
 int main() {
-    SPDLOG_DEBUG("Start program");
+  SPDLOG_DEBUG("Start program");
 
-    // Initialize application
-    App& app = App::Instance();
+  // Initialize application
+  App& app = App::Instance();
 
-    // Initialize glfw
-    SPDLOG_DEBUG("Initialize glfw");
-    if (!glfwInit()) {
-        glfwSetErrorCallback(OnGlfwError);
-        return -1;
-    }
+  // Initialize glfw
+  SPDLOG_DEBUG("Initialize glfw");
+  if (!glfwInit()) {
+    glfwSetErrorCallback(OnGlfwError);
+    return -1;
+  }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #ifndef __EMSCRIPTEN__
-    glfwWindowHint(GLFW_SAMPLES, 4);  // For MSAA
+  glfwWindowHint(GLFW_SAMPLES, 4);  // For MSAA
 #endif
 
-    SPDLOG_DEBUG("Create glfw window");
-    int32_t width, height;
-#ifdef __EMSCRIPTEN__ 
-    // For wasm, width and height can be obtained from canvas.
-    emscripten_get_canvas_element_size("canvas", &width, &height);
-    auto window = glfwCreateWindow(width, height, WINDOW_NAME, nullptr, nullptr);
-#else        
-    auto window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME,
-        nullptr, nullptr);
-#endif
-    if (!window) {
-        SPDLOG_ERROR("Failed to create glfw window");
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-#ifndef __EMSCRIPTEN__
-    // Load OpenGL functions using glad
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        SPDLOG_ERROR("Failed to initialize glad");
-        glfwTerminate();
-        return -1;
-    }
-#endif
-    auto glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-    SPDLOG_DEBUG("OpenGL context version: {}", glVersion);
-
-    // Setup ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    io.ConfigViewportsNoAutoMerge = false;
-    io.ConfigViewportsNoTaskBarIcon = true;
-    io.ConfigDockingTransparentPayload = true;
-
-    // Setup fonts
-    // Initialize font manager after ImGui context is created
-    FontManager& fontManager = FontManager::Instance();
-
-    // Setup Initial ImGui style
-    // Initialize ImGui style after ImGui context is created.
-    app.SetInitStyle();
-
-    // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
-    ImGuiStyle& style = ImGui::GetStyle();
-    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-    {
-        style.WindowRounding = 0.0f;
-        style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-        style.WindowPadding = ImVec2(8.0f, 8.0f);
-        style.FramePadding = ImVec2(5.0f, 3.0f);
-        style.FrameRounding = 3.0f;
-        style.TabRounding = 3.0f;
-        style.ScrollbarRounding = 3.0f;
-        style.GrabRounding = 3.0f;
-    }
-
+  SPDLOG_DEBUG("Create glfw window");
+  int32_t width, height;
 #ifdef __EMSCRIPTEN__
-    // const float dpRatio = emscripten_get_device_pixel_ratio();
-    // io.FontGlobalScale = dpRatio;
-    style.ScaleAllSizes(SizeConfig::DevicePixelRatio());
+  // For wasm, width and height can be obtained from canvas.
+  emscripten_get_canvas_element_size("canvas", &width, &height);
+  auto window = glfwCreateWindow(width, height, WINDOW_NAME, nullptr, nullptr);
 #else
-    io.FontGlobalScale = 1.0f / SizeConfig::DevicePixelRatio();
+  auto window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_NAME,
+                                 nullptr, nullptr);
 #endif
-
-#ifdef __EMSCRIPTEN__
-    const char* glsl_version = "#version 300 es";    // OpenGL ES for WebGL
-#else
-    const char* glsl_version = "#version 330 core";  // Native OpenGL
-#endif
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-#ifdef __EMSCRIPTEN__
-    ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
-#endif
-    ImGui_ImplOpenGL3_Init(glsl_version);
-
-    // Initialize ImGui-based windows
-    // They should be initialized after ImGui context is created.
-    app.InitImGuiWindows();
-
-    // For the first window, run this callback once
-    OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
-
-    // Set glfw callbacks
-    glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
-    glfwSetKeyCallback(window, OnKeyEvent);
-    glfwSetCharCallback(window, OnCharEvent);
-    glfwSetCursorPosCallback(window, OnMouseMoveEvent);
-    glfwSetMouseButtonCallback(window, OnMouseButtonEvent);
-    glfwSetScrollCallback(window, OnScrollEvent);
-
-    // Main loop
-    SPDLOG_DEBUG("Start main loop");
-#ifdef __EMSCRIPTEN__
-    EMSCRIPTEN_MAINLOOP_BEGIN
-#else
-    while (!glfwWindowShouldClose(window))
-#endif
-    {
-        glfwPollEvents();
-        if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0)
-        {
-            ImGui_ImplGlfw_Sleep(10);
-            continue;
-        }
-
-        // Start the Dear ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // Render all ImGui-based windows
-        app.Render();
-
-        ImGui::Render();
-        
-        // Clear default framebuffer to black
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        // Update and Render additional Platform Windows
-        // (Platform functions may change the current OpenGL context, so we save/restore it to make it easier to paste this code elsewhere.
-        //  For this specific demo app we could also call glfwMakeContextCurrent(window) directly)
-        if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-        {
-            GLFWwindow* backup_current_context = glfwGetCurrentContext();
-            ImGui::UpdatePlatformWindows();
-            ImGui::RenderPlatformWindowsDefault();
-            glfwMakeContextCurrent(backup_current_context);
-        }
-
-        glfwSwapBuffers(window);
-    }
-#ifdef __EMSCRIPTEN__
-    EMSCRIPTEN_MAINLOOP_END;
-#endif
-
-    // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-
-    glfwDestroyWindow(window);
+  if (!window) {
+    SPDLOG_ERROR("Failed to create glfw window");
     glfwTerminate();
+    return -1;
+  }
+  glfwMakeContextCurrent(window);
 
-    return 0;
+#ifndef __EMSCRIPTEN__
+  // Load OpenGL functions using glad
+  if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    SPDLOG_ERROR("Failed to initialize glad");
+    glfwTerminate();
+    return -1;
+  }
+#endif
+  auto glVersion = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+  SPDLOG_DEBUG("OpenGL context version: {}", glVersion);
+
+  // Setup ImGui context
+  IMGUI_CHECKVERSION();
+  ImGui::CreateContext();
+  ImGuiIO& io = ImGui::GetIO();
+  io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+  io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+  io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+  io.ConfigViewportsNoAutoMerge = false;
+  io.ConfigViewportsNoTaskBarIcon = true;
+  io.ConfigDockingTransparentPayload = true;
+
+  // Setup fonts
+  // Initialize font manager after ImGui context is created
+  FontManager& fontManager = FontManager::Instance();
+
+  // Setup Initial ImGui style
+  // Initialize ImGui style after ImGui context is created.
+  app.SetInitStyle();
+
+  // When viewports are enabled we tweak WindowRounding/WindowBg so platform
+  // windows can look identical to regular ones.
+  ImGuiStyle& style = ImGui::GetStyle();
+  if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+    style.WindowRounding = 0.0f;
+    style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+    style.WindowPadding = ImVec2(8.0f, 8.0f);
+    style.FramePadding = ImVec2(5.0f, 3.0f);
+    style.FrameRounding = 3.0f;
+    style.TabRounding = 3.0f;
+    style.ScrollbarRounding = 3.0f;
+    style.GrabRounding = 3.0f;
+  }
+
+#ifdef __EMSCRIPTEN__
+  // const float dpRatio = emscripten_get_device_pixel_ratio();
+  // io.FontGlobalScale = dpRatio;
+  style.ScaleAllSizes(SizeConfig::DevicePixelRatio());
+#else
+  io.FontGlobalScale = 1.0f / SizeConfig::DevicePixelRatio();
+#endif
+
+#ifdef __EMSCRIPTEN__
+  const char* glsl_version = "#version 300 es";  // OpenGL ES for WebGL
+#else
+  const char* glsl_version = "#version 330 core";  // Native OpenGL
+#endif
+
+  // Setup Platform/Renderer backends
+  ImGui_ImplGlfw_InitForOpenGL(window, true);
+#ifdef __EMSCRIPTEN__
+  ImGui_ImplGlfw_InstallEmscriptenCallbacks(window, "#canvas");
+#endif
+  ImGui_ImplOpenGL3_Init(glsl_version);
+
+  // Initialize ImGui-based windows
+  // They should be initialized after ImGui context is created.
+  app.InitImGuiWindows();
+
+  // For the first window, run this callback once
+  OnFramebufferSizeChange(window, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+  // Set glfw callbacks
+  glfwSetFramebufferSizeCallback(window, OnFramebufferSizeChange);
+  glfwSetKeyCallback(window, OnKeyEvent);
+  glfwSetCharCallback(window, OnCharEvent);
+  glfwSetCursorPosCallback(window, OnMouseMoveEvent);
+  glfwSetMouseButtonCallback(window, OnMouseButtonEvent);
+  glfwSetScrollCallback(window, OnScrollEvent);
+
+  // Main loop
+  SPDLOG_DEBUG("Start main loop");
+#ifdef __EMSCRIPTEN__
+  EMSCRIPTEN_MAINLOOP_BEGIN
+#else
+  while (!glfwWindowShouldClose(window))
+#endif
+  {
+    glfwPollEvents();
+    if (glfwGetWindowAttrib(window, GLFW_ICONIFIED) != 0) {
+      ImGui_ImplGlfw_Sleep(10);
+      continue;
+    }
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    // Render all ImGui-based windows
+    app.Render();
+
+    ImGui::Render();
+
+    // Clear default framebuffer to black
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+    // Update and Render additional Platform Windows
+    // (Platform functions may change the current OpenGL context, so we
+    // save/restore it to make it easier to paste this code elsewhere.
+    //  For this specific demo app we could also call
+    //  glfwMakeContextCurrent(window) directly)
+    if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+      GLFWwindow* backup_current_context = glfwGetCurrentContext();
+      ImGui::UpdatePlatformWindows();
+      ImGui::RenderPlatformWindowsDefault();
+      glfwMakeContextCurrent(backup_current_context);
+    }
+
+    glfwSwapBuffers(window);
+  }
+#ifdef __EMSCRIPTEN__
+  EMSCRIPTEN_MAINLOOP_END;
+#endif
+
+  // Cleanup
+  ImGui_ImplOpenGL3_Shutdown();
+  ImGui_ImplGlfw_Shutdown();
+  ImGui::DestroyContext();
+
+  glfwDestroyWindow(window);
+  glfwTerminate();
+
+  return 0;
 }

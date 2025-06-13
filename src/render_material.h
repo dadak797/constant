@@ -34,6 +34,7 @@ class RenderMaterial {
   TexturePtr m_Specular{nullptr};
   float m_Shininess{32.0f};
 
-  glm::vec3 m_DiffuseColor{glm::vec3(0.8f, 0.8f, 0.8f)};  // Single diffuse color
-  bool m_bUseDiffuseTexture{true};  // Use texture or single color
+  glm::vec3 m_DiffuseColor{
+      glm::vec3(0.8f, 0.8f, 0.8f)};  // Single diffuse color
+  bool m_bUseDiffuseTexture{true};   // Use texture or single color
 };

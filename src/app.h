@@ -1,8 +1,8 @@
 #pragma once
 
 #include "config/log_config.h"
-#include "macro/singleton_macro.h"
 #include "enum/app_enums.h"
+#include "macro/singleton_macro.h"
 
 // ImGui
 #include <imgui.h>

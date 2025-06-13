@@ -6,26 +6,30 @@
 // Standard library
 #include <vector>
 
-
 DECLARE_PTR(Framebuffer);
 class Framebuffer {
-public:
-    static FramebufferUPtr New(const std::vector<TexturePtr>& colorAttachments);
-    static void BindToDefault();
+ public:
+  static FramebufferUPtr New(const std::vector<TexturePtr>& colorAttachments);
+  static void BindToDefault();
 
-    ~Framebuffer();
+  ~Framebuffer();
 
-    const uint32_t Get() const { return m_Framebuffer; }
-    void Bind() const;
-    int32_t GetColorAttachmentCount() const { return (int32_t)m_ColorAttachments.size(); }
-    const TexturePtr GetColorAttachment(int32_t index = 0) const { return m_ColorAttachments.at(index); }
+  const uint32_t Get() const { return m_Framebuffer; }
+  void Bind() const;
+  int32_t GetColorAttachmentCount() const {
+    return (int32_t)m_ColorAttachments.size();
+  }
+  const TexturePtr GetColorAttachment(int32_t index = 0) const {
+    return m_ColorAttachments.at(index);
+  }
 
-private:
-    Framebuffer();
+ private:
+  Framebuffer();
 
-    bool initWithColorAttachments(const std::vector<TexturePtr>& colorAttachments);
+  bool initWithColorAttachments(
+      const std::vector<TexturePtr>& colorAttachments);
 
-    uint32_t m_Framebuffer { 0 };
-    uint32_t m_DepthStencilBuffer { 0 };
-    std::vector<TexturePtr> m_ColorAttachments;
+  uint32_t m_Framebuffer{0};
+  uint32_t m_DepthStencilBuffer{0};
+  std::vector<TexturePtr> m_ColorAttachments;
 };

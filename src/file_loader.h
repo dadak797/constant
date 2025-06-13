@@ -5,14 +5,13 @@
 // Standard library
 #include <string>
 
-
 class FileLoader {
-    DECLARE_SINGLETON(FileLoader)
+  DECLARE_SINGLETON(FileLoader)
 
-public:
-    void OpenFileBrowser();
+ public:
+  void OpenFileBrowser();
 
-    // fileName: File name in MemFS
-    // deleteFile: Delete file in MemFS in this function
-    static void LoadArrayBuffer(const std::string& fileName, bool deleteFile);
+  // fileName: File name in MemFS
+  // deleteFile: Delete file in MemFS in this function
+  static void LoadArrayBuffer(const std::string& fileName, bool deleteFile);
 };

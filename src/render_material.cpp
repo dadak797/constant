@@ -1,8 +1,9 @@
 #include "render_material.h"
+
 #include "shader_program.h"
 
 RenderMaterialUPtr RenderMaterial::New(TexturePtr diffuse, TexturePtr specular,
-                                 float shininess) {
+                                       float shininess) {
   auto material = RenderMaterialUPtr(new RenderMaterial());
   material->SetDiffuse(diffuse);
   material->SetSpecular(specular);

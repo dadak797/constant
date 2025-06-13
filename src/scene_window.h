@@ -20,9 +20,10 @@ class SceneWindow {
   FramebufferUPtr m_Framebuffer{nullptr};
   TexturePtr m_ColorTexture{nullptr};
 
-  // In WebAssembly, the framebuffer and scene size are the same as the canvas size.
-  // In native applications, the framebuffer size can be different from the scene size.
-  // The framebuffer size is the size of the texture, and the scene size is the size of the ImGui window.
+  // In WebAssembly, the framebuffer and scene size are the same as the canvas
+  // size. In native applications, the framebuffer size can be different from
+  // the scene size. The framebuffer size is the size of the texture, and the
+  // scene size is the size of the ImGui window.
   int32_t m_FramebufferWidth{960};
   int32_t m_FramebufferHeight{640};
   int32_t m_SceneWidth{960};

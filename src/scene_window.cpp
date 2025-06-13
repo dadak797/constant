@@ -28,7 +28,8 @@ void SceneWindow::init() {
 
 void SceneWindow::initFramebuffer() {
   // Create color texture. The old texture is deleted by losing the reference.
-  m_ColorTexture = Texture::New(m_FramebufferWidth, m_FramebufferHeight, GL_RGBA);
+  m_ColorTexture =
+      Texture::New(m_FramebufferWidth, m_FramebufferHeight, GL_RGBA);
   if (!m_ColorTexture) {
     SPDLOG_ERROR("Failed to create color texture!");
     return;
@@ -41,7 +42,8 @@ void SceneWindow::initFramebuffer() {
     return;
   }
 
-  SPDLOG_DEBUG("Scene framebuffer initialized: ({} x {})", m_FramebufferWidth, m_FramebufferHeight);
+  SPDLOG_DEBUG("Scene framebuffer initialized: ({} x {})", m_FramebufferWidth,
+               m_FramebufferHeight);
 }
 
 void SceneWindow::resizeFramebuffer(int32_t width, int32_t height) {
@@ -60,8 +62,8 @@ void SceneWindow::renderMesh() {
   m_SimpleProgram->Use();
 
   // Projection matrix
-  float aspectRatio =
-      static_cast<float>(m_FramebufferWidth) / static_cast<float>(m_FramebufferHeight);
+  float aspectRatio = static_cast<float>(m_FramebufferWidth) /
+                      static_cast<float>(m_FramebufferHeight);
   glm::mat4 projection =
       glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 
@@ -120,7 +122,8 @@ void SceneWindow::processEvents() {
     dragStartPos = io.MousePos;
 
     float titleBarHeight = viewportPos.y;
-    // float titleBarHeight = ImGui::GetFrameHeight() + ImGui::GetStyle().FramePadding.y;
+    // float titleBarHeight = ImGui::GetFrameHeight() +
+    // ImGui::GetStyle().FramePadding.y;
 
     if (io.MousePos.y >= windowPos.y &&
         io.MousePos.y <= windowPos.y + titleBarHeight &&
@@ -152,7 +155,9 @@ void SceneWindow::processEvents() {
 
   // Get clicked position with normalized device coordinates (NDC)
   float ndcX = 2.0f * (posX / static_cast<float>(m_SceneWidth)) - 1.0f;
-  float ndcY = 1.0f - 2.0f * (posY / static_cast<float>(m_SceneHeight));  // Inverted Y-axis
+  float ndcY =
+      1.0f -
+      2.0f * (posY / static_cast<float>(m_SceneHeight));  // Inverted Y-axis
 
   int32_t ctrl = static_cast<int32_t>(io.KeyCtrl);
   int32_t shift = static_cast<int32_t>(io.KeyShift);
@@ -190,12 +195,11 @@ void SceneWindow::Render(bool* openWindow) {
   newFramebufferWidth = static_cast<int32_t>(sceneSize.x);
   newFramebufferHeight = static_cast<int32_t>(sceneSize.y);
 #else
-  // For native platforms, GetContentRegionAvail() returns the physical pixel size.
+  // For native platforms, GetContentRegionAvail() returns the physical pixel
+  // size.
   float dpRatio = static_cast<float>(SizeConfig::DevicePixelRatio());
-  newFramebufferWidth =
-      static_cast<int32_t>(sceneSize.x * dpRatio);
-  newFramebufferHeight = 
-      static_cast<int32_t>(sceneSize.y * dpRatio);
+  newFramebufferWidth = static_cast<int32_t>(sceneSize.x * dpRatio);
+  newFramebufferHeight = static_cast<int32_t>(sceneSize.y * dpRatio);
 #endif
   m_SceneWidth = static_cast<int32_t>(sceneSize.x);
   m_SceneHeight = static_cast<int32_t>(sceneSize.y);

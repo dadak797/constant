@@ -3,13 +3,13 @@
 #include "macro/singleton_macro.h"
 
 // Font icons
-#include "icon/FontAwesome6.h"
-#include "icon/FontAwesome6Brands.h"
-#include "icon/FontAwesome5.h"
-#include "icon/FontAwesome5Brands.h"
-#include "icon/FontAwesome4.h"
 #include "icon/CodIcons.h"
 #include "icon/FontAudio.h"
+#include "icon/FontAwesome4.h"
+#include "icon/FontAwesome5.h"
+#include "icon/FontAwesome5Brands.h"
+#include "icon/FontAwesome6.h"
+#include "icon/FontAwesome6Brands.h"
 #include "icon/ForkAwesome.h"
 #include "icon/Kenney.h"
 #include "icon/Lucide.h"
@@ -26,79 +26,78 @@
 // Forward declarations
 class ImFont;
 
-
 enum class FontIcon {
-    FontAwesome6S,  // Solid
-    FontAwesome6R,  // Regular
-    FontAwesome6B,  // Brands
-    FontAwesome5S,  // Solid
-    FontAwesome5R,  // Regular
-    FontAwesome5B,  // Brands
-    FontAwesome4,
-    CodIcons,
-    FontAudio,
-    ForkAwesome,
-    Kenney,
-    Lucide,
-    MaterialDesign,
-    // MaterialDesignIcons,  // Not working
-    MaterialSymbolsO,  // Outlined
-    // MaterialSymbolsR,  // Rounded - No difference with MaterialSymbolsO
-    // MaterialSymbolsS   // Sharp - No difference with MaterialSymbolsO
+  FontAwesome6S,  // Solid
+  FontAwesome6R,  // Regular
+  FontAwesome6B,  // Brands
+  FontAwesome5S,  // Solid
+  FontAwesome5R,  // Regular
+  FontAwesome5B,  // Brands
+  FontAwesome4,
+  CodIcons,
+  FontAudio,
+  ForkAwesome,
+  Kenney,
+  Lucide,
+  MaterialDesign,
+  // MaterialDesignIcons,  // Not working
+  MaterialSymbolsO,  // Outlined
+  // MaterialSymbolsR,  // Rounded - No difference with MaterialSymbolsO
+  // MaterialSymbolsS   // Sharp - No difference with MaterialSymbolsO
 };
 
 class FontManager {
-    DECLARE_SINGLETON(FontManager)
+  DECLARE_SINGLETON(FontManager)
 
-public:    
-    void SetFontIcon(FontIcon fontIcon);
-    void SetDefaultFontIcon();
+ public:
+  void SetFontIcon(FontIcon fontIcon);
+  void SetDefaultFontIcon();
 
 #ifdef SHOW_FONT_ICONS
-    void Render(bool* openWindow = nullptr);
+  void Render(bool* openWindow = nullptr);
 #endif
 
-private:
-    std::unordered_map<FontIcon, ImFont*> m_FontIcons;
-    ImFontConfig m_DefaultFontConfig;
+ private:
+  std::unordered_map<FontIcon, ImFont*> m_FontIcons;
+  ImFontConfig m_DefaultFontConfig;
 
-    void init();
+  void init();
 
-    void loadFontAwesome6S();
-    void loadFontAwesome6R();
-    void loadFontAwesome6B();
-    void loadFontAwesome5S();
-    void loadFontAwesome5R();
-    void loadFontAwesome5B();
-    void loadFontAwesome4();
-    void loadCodIcons();
-    void loadFontAudio();
-    void loadForkAwesome();
-    void loadKenney();
-    void loadLucide();
-    void loadMaterialDesign();
-    // void loadMaterialDesignIcons();
-    void loadMaterialSymbolsO();
-    // void loadMaterialSymbolsR();
-    // void loadMaterialSymbolsS();
+  void loadFontAwesome6S();
+  void loadFontAwesome6R();
+  void loadFontAwesome6B();
+  void loadFontAwesome5S();
+  void loadFontAwesome5R();
+  void loadFontAwesome5B();
+  void loadFontAwesome4();
+  void loadCodIcons();
+  void loadFontAudio();
+  void loadForkAwesome();
+  void loadKenney();
+  void loadLucide();
+  void loadMaterialDesign();
+  // void loadMaterialDesignIcons();
+  void loadMaterialSymbolsO();
+  // void loadMaterialSymbolsR();
+  // void loadMaterialSymbolsS();
 
 #ifdef SHOW_FONT_ICONS
-    void drawFontAwesome6S(bool* openWindow);
-    void drawFontAwesome6R(bool* openWindow);
-    void drawFontAwesome6B(bool* openWindow);
-    void drawFontAwesome5S(bool* openWindow);
-    void drawFontAwesome5R(bool* openWindow);
-    void drawFontAwesome5B(bool* openWindow);
-    void drawFontAwesome4(bool* openWindow);
-    void drawCodIcons(bool* openWindow);
-    void drawFontAudio(bool* openWindow);
-    void drawForkAwesome(bool* openWindow);
-    void drawKenney(bool* openWindow);
-    void drawLucide(bool* openWindow);
-    void drawMaterialDesign(bool* openWindow);
-    // void drawMaterialDesignIcons(bool* openWindow);
-    void drawMaterialSymbolsO(bool* openWindow);
-    // void drawMaterialSymbolsR(bool* openWindow);
-    // void drawMaterialSymbolsS(bool* openWindow);
+  void drawFontAwesome6S(bool* openWindow);
+  void drawFontAwesome6R(bool* openWindow);
+  void drawFontAwesome6B(bool* openWindow);
+  void drawFontAwesome5S(bool* openWindow);
+  void drawFontAwesome5R(bool* openWindow);
+  void drawFontAwesome5B(bool* openWindow);
+  void drawFontAwesome4(bool* openWindow);
+  void drawCodIcons(bool* openWindow);
+  void drawFontAudio(bool* openWindow);
+  void drawForkAwesome(bool* openWindow);
+  void drawKenney(bool* openWindow);
+  void drawLucide(bool* openWindow);
+  void drawMaterialDesign(bool* openWindow);
+  // void drawMaterialDesignIcons(bool* openWindow);
+  void drawMaterialSymbolsO(bool* openWindow);
+  // void drawMaterialSymbolsR(bool* openWindow);
+  // void drawMaterialSymbolsS(bool* openWindow);
 #endif
 };
