@@ -22,8 +22,8 @@ void SceneWindow::init() {
   // TODO: Load background color from file
 #endif
   m_Box = Mesh::New(MeshType::BOX);
-  m_SimpleProgram = ShaderProgram::New("resources/shader/simple.vs",
-                                       "resources/shader/simple.fs");
+  m_SimpleProgram = ShaderProgram::New("resources/shader/phong_lighting.vs",
+                                       "resources/shader/phong_lighting.fs");
 }
 
 void SceneWindow::initFramebuffer() {
@@ -68,7 +68,7 @@ void SceneWindow::renderMesh() {
       glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 
   // View matrix
-  glm::mat4 view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),  // Camera position
+  glm::mat4 view = glm::lookAt(m_CameraPosition,  // Camera position
                                glm::vec3(0.0f, 0.0f, 0.0f),  // Focal point
                                glm::vec3(0.0f, 1.0f, 0.0f)   // Up vector
   );
@@ -76,14 +76,22 @@ void SceneWindow::renderMesh() {
   // Model matrix
   float rotationAngle = 30.0f;
   glm::mat4 model = glm::mat4(1.0f);
-  model = glm::rotate(model, rotationAngle, glm::vec3(0.5f, 1.0f, 0.0f));
+  model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(1.0f, 0.0f, 0.0f));
+  model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
 
   // Transform matrix
   glm::mat4 transform = projection * view * model;
 
   // Set uniforms
-  m_SimpleProgram->SetUniform("transform", transform);
-  m_SimpleProgram->SetUniform("color", glm::vec4(1.0f, 0.5f, 0.2f, 1.0f));
+  m_SimpleProgram->SetUniform("u_transform", transform);
+  m_SimpleProgram->SetUniform("u_modelTransform", model);
+  m_SimpleProgram->SetUniform("u_lightPosition", m_LightPosition);
+  m_SimpleProgram->SetUniform("u_lightColor", m_LightColor);
+  m_SimpleProgram->SetUniform("u_objectColor", m_BoxColor);
+  m_SimpleProgram->SetUniform("u_ambientStrength", m_AmbientStrength);
+  m_SimpleProgram->SetUniform("u_specularStrength", m_SpecularStrength);
+  m_SimpleProgram->SetUniform("u_specularShiness", m_SpecularShiness);
+  m_SimpleProgram->SetUniform("u_viewPosition", m_CameraPosition);
 
   // Render the box mesh
   m_Box->Draw(m_SimpleProgram.get());

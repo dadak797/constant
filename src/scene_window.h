@@ -29,12 +29,23 @@ class SceneWindow {
   int32_t m_SceneWidth{960};
   int32_t m_SceneHeight{640};
 
-  std::array<float, 3> m_BgColor{0.1f, 0.2f, 0.3f};
+  std::array<float, 3> m_BgColor{1.0f, 1.0f, 1.0f};
 
   const char* IMGUI_BGCOLOR_KEY = "Constant-BgColor";
 
   MeshUPtr m_Box;
+  glm::vec3 m_BoxColor{glm::vec3{1.0f, 0.5f, 0.0f}};
   ShaderProgramUPtr m_SimpleProgram;
+
+  // Camera
+  glm::vec3 m_CameraPosition{glm::vec3{0.0f, 0.0f, 3.0f}};
+
+  // Light
+  glm::vec3 m_LightColor{glm::vec3{1.0f, 1.0f, 1.0f}};
+  glm::vec3 m_LightPosition{glm::vec3{3.0f, 3.0f, 3.0f}};
+  float m_AmbientStrength{0.1f};
+  float m_SpecularStrength{0.5f};
+  float m_SpecularShiness{32.0f};
 
   void init();
   void initFramebuffer();
