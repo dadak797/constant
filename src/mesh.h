@@ -1,7 +1,6 @@
 #pragma once
 
 #include "buffer.h"
-#include "enum/mesh_enums.h"
 #include "macro/ptr_macro.h"
 #include "render_material.h"
 #include "vertex_layout.h"
@@ -22,8 +21,11 @@ DECLARE_PTR(Mesh)
 class Mesh {
  public:
   static MeshUPtr New(std::vector<Vertex>&& vertices,
-                      std::vector<uint32_t>&& indices, uint32_t primitiveType);
-  static MeshUPtr New(MeshType meshType);
+                      std::vector<uint32_t>&& indices,
+                      uint32_t primitiveType);
+  static MeshUPtr CreateBox();
+  static MeshUPtr CreateSphere(uint32_t latiSegmentCount = 16,
+                               uint32_t longiSegmentCount = 32);
 
   ~Mesh();
 
@@ -52,13 +54,6 @@ class Mesh {
   std::vector<Vertex> m_Vertices;
   std::vector<uint32_t> m_Indices;
 
-  void init();
-
-  void createBox();
-  void createSphere();
-  void createCylinder();
-  void createCone();
-  void createPlane();
-  void createTorus();
-  void createDisk();
+  void init(std::vector<Vertex>&& vertices,
+            std::vector<uint32_t>&& indices, uint32_t primitiveType);
 };

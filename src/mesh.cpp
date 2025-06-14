@@ -10,47 +10,18 @@ MeshUPtr Mesh::New(std::vector<Vertex>&& vertices,
     SPDLOG_ERROR("Vertices or indices are empty");
     return nullptr;
   }
-  mesh->m_Vertices = std::move(vertices);
-  mesh->m_Indices = std::move(indices);
-  mesh->m_PrimitiveType = primitiveType;
-  mesh->init();
-  return std::move(mesh);
-}
-
-MeshUPtr Mesh::New(MeshType meshType) {
-  auto mesh = MeshUPtr(new Mesh());
-  switch (meshType) {
-    case MeshType::BOX:
-      mesh->createBox();
-      break;
-    case MeshType::SPHERE:
-      mesh->createSphere();
-      break;
-    case MeshType::CYLINDER:
-      mesh->createCylinder();
-      break;
-    case MeshType::CONE:
-      mesh->createCone();
-      break;
-    case MeshType::PLANE:
-      mesh->createPlane();
-      break;
-    case MeshType::TORUS:
-      mesh->createTorus();
-      break;
-    case MeshType::DISK:
-      mesh->createDisk();
-      break;
-    default:
-      SPDLOG_ERROR("Unknown mesh type");
-      break;
-  }
+  mesh->init(std::move(vertices), std::move(indices), primitiveType);
   return std::move(mesh);
 }
 
 Mesh::~Mesh() {}
 
-void Mesh::init() {
+void Mesh::init(std::vector<Vertex>&& vertices, std::vector<uint32_t>&& indices,
+                uint32_t primitiveType) {
+  m_Vertices = std::move(vertices);
+  m_Indices = std::move(indices);
+  m_PrimitiveType = primitiveType;
+
   if (m_PrimitiveType == GL_TRIANGLES) {
     ComputeTangents(m_Vertices, m_Indices);
   }
@@ -131,7 +102,7 @@ void Mesh::Draw(const ShaderProgram* program) const {
                  0);
 }
 
-void Mesh::createBox() {
+MeshUPtr Mesh::CreateBox() {
   std::vector<Vertex> vertices = {
       Vertex{glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, -1.0f),
              glm::vec2(0.0f, 0.0f)},
@@ -193,20 +164,46 @@ void Mesh::createBox() {
       12, 14, 13, 14, 12, 15, 16, 17, 18, 18, 19, 16, 20, 22, 21, 22, 20, 23,
   };
 
-  m_Vertices = std::move(vertices);
-  m_Indices = std::move(indices);
-  m_PrimitiveType = GL_TRIANGLES;
-  init();
+  return New(std::move(vertices), std::move(indices), GL_TRIANGLES);
 }
 
-void Mesh::createSphere() {}
+MeshUPtr Mesh::CreateSphere(uint32_t latiSegmentCount,
+                            uint32_t longiSegmentCount) {
+  std::vector<Vertex> vertices;
+  std::vector<uint32_t> indices;
 
-void Mesh::createCylinder() {}
+  uint32_t circleVertCount = longiSegmentCount + 1;
+  vertices.resize((latiSegmentCount + 1) * circleVertCount);
+  for (uint32_t i = 0; i <= latiSegmentCount; ++i) {
+    float v = (float)i / (float)latiSegmentCount;
+    float phi = (v - 0.5f) * glm::pi<float>();
+    auto cosPhi = cosf(phi);
+    auto sinPhi = sinf(phi);
+    for (uint32_t j = 0; j <= longiSegmentCount; j++) {
+      float u = (float)j / (float)longiSegmentCount;
+      float theta = u * glm::pi<float>() * 2.0f;
+      auto cosTheta = cosf(theta);
+      auto sinTheta = sinf(theta);
+      auto point = glm::vec3(cosPhi * cosTheta, sinPhi, -cosPhi * sinTheta);
 
-void Mesh::createCone() {}
+      vertices[i * circleVertCount + j] =
+          Vertex{point * 0.5f, point, glm::vec2(u, v), glm::vec3(0.0f)};
+    }
+  }
 
-void Mesh::createPlane() {}
+  indices.resize(latiSegmentCount * longiSegmentCount * 6);
+  for (uint32_t i = 0; i < latiSegmentCount; ++i) {
+    for (uint32_t j = 0; j < longiSegmentCount; j++) {
+      uint32_t vertexOffset = i * circleVertCount + j;
+      uint32_t indexOffset = (i * longiSegmentCount + j) * 6;
+      indices[indexOffset] = vertexOffset;
+      indices[indexOffset + 1] = vertexOffset + 1;
+      indices[indexOffset + 2] = vertexOffset + 1 + circleVertCount;
+      indices[indexOffset + 3] = vertexOffset;
+      indices[indexOffset + 4] = vertexOffset + 1 + circleVertCount;
+      indices[indexOffset + 5] = vertexOffset + circleVertCount;
+    }
+  }
 
-void Mesh::createTorus() {}
-
-void Mesh::createDisk() {}
+  return New(std::move(vertices), std::move(indices), GL_TRIANGLES);
+}
