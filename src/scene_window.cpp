@@ -22,7 +22,7 @@ void SceneWindow::init() {
   // TODO: Load background color from file
 #endif
   m_Box = Mesh::CreateBox();
-  m_LightSphere = Mesh::CreateSphere(16, 32);
+  m_LightSphere = Mesh::CreateSphere(8, 16);
   m_PhongLightProgram = ShaderProgram::New("resources/shader/phong_lighting.vs",
                                            "resources/shader/phong_lighting.fs");
   m_LightProgram = ShaderProgram::New("resources/shader/light.vs",

@@ -39,6 +39,9 @@ add_executable(${PROJECT_NAME}
   src/util/file_util.cpp      src/util/file_util.h
   src/mesh.cpp                src/mesh.h
   src/config/size_config.cpp  src/config/size_config.h
+  src/lcrs_tree.cpp           src/lcrs_tree.h
+  src/scene_tree.cpp          src/scene_tree.h
+  src/custom_ui.cpp           src/custom_ui.h
 )
 
 if(APPLE)

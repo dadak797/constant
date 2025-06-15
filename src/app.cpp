@@ -3,6 +3,7 @@
 #include "file_loader.h"
 #include "font_manager.h"
 #include "scene_window.h"
+#include "scene_tree.h"
 
 // Standard library
 #include <fstream>
@@ -236,6 +237,7 @@ void App::renderDockSpaceAndMenu() {
     bool openWindows = ImGui::BeginMenu("Windows");
     if (openWindows) {
       ImGui::MenuItem("Scene", nullptr, &m_bShowSceneWindow);
+      ImGui::MenuItem("Scene Tree", nullptr, &m_bShowSceneTree);
 #ifdef DEBUG_BUILD
       ImGui::MenuItem("Full Dockspace", nullptr, &m_bFullDockSpace);
 #endif
@@ -254,10 +256,10 @@ void App::renderDockSpaceAndMenu() {
 
 void App::InitImGuiWindows() {
   SceneWindow& sceneWindow = SceneWindow::Instance();
+  SceneTree& sceneTree = SceneTree::Instance();
 }
 
 void App::renderImGuiWindows() {
-  if (m_bShowSceneWindow) SceneWindow::Instance().Render();
 #ifdef SHOW_IMGUI_DEMO
   if (m_bShowDemoWindow) ImGui::ShowDemoWindow(&m_bShowDemoWindow);
 #endif
@@ -266,4 +268,6 @@ void App::renderImGuiWindows() {
 #endif
   if (m_bShowBgColorPopup)
     SceneWindow::Instance().RenderBgColorPopup(&m_bShowBgColorPopup);
+  if (m_bShowSceneTree) SceneTree::Instance().Render();
+  if (m_bShowSceneWindow) SceneWindow::Instance().Render();
 }

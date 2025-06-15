@@ -46,6 +46,7 @@ class App {
   bool m_bShowFontIcons = true;
 #endif
   bool m_bShowSceneWindow = true;
+  bool m_bShowSceneTree = true;
   bool m_bShowBgColorPopup = false;
 
   // useConsole: true - log to console, false - log to file
