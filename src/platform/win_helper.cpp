@@ -1,9 +1,9 @@
-#include "win_helper.h"
-
 // Windows api headers
+#include <windows.h>
 #include <commdlg.h>
 #include <shellscalingapi.h>  // for GetDpiForMonitor
-#include <windows.h>
+
+#include "win_helper.h"
 
 #pragma comment(lib, "Shcore.lib")
 

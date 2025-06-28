@@ -3,6 +3,9 @@
 #include "config/gl_config.h"
 #include "macro/ptr_macro.h"
 
+// Standard library
+#include <string>
+
 DECLARE_PTR(Shader)
 class Shader {
  public:
